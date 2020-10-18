@@ -29,7 +29,7 @@ public class GuildSettingsEntity {
     @Column(nullable = false)
     private String djRoleId;
     @Column(nullable = false)
-    private String musicChannelId;
+    private String musicTextChannelId;
     @Column(nullable = false)
     private String musicVoiceChannelId;
     @Column(nullable = false)
@@ -40,7 +40,7 @@ public class GuildSettingsEntity {
     public GuildSettingsEntity() {
     }
 
-    public GuildSettingsEntity(Long serverId, String prefix, String serverName, boolean welcomeMessage, String welcomeAvatar, String ticketMessage, String welcomeDm, String serverAvatar, String djRoleId, String musicChannelId, String musicVoiceChannelId, boolean repeatMode, String defaultPlaylist) {
+    public GuildSettingsEntity(Long serverId, String prefix, String serverName, boolean welcomeMessage, String welcomeAvatar, String ticketMessage, String welcomeDm, String serverAvatar, String djRoleId, String musicTextChannelId, String musicVoiceChannelId, boolean repeatMode, String defaultPlaylist) {
         this.serverId = serverId;
         this.prefix = prefix;
         this.serverName = serverName;
@@ -50,7 +50,7 @@ public class GuildSettingsEntity {
         this.welcomeDm = welcomeDm;
         this.serverAvatar = serverAvatar;
         this.djRoleId = djRoleId;
-        this.musicChannelId = musicChannelId;
+        this.musicTextChannelId = musicTextChannelId;
         this.musicVoiceChannelId = musicVoiceChannelId;
         this.repeatMode = repeatMode;
         this.defaultPlaylist = defaultPlaylist;
@@ -129,12 +129,12 @@ public class GuildSettingsEntity {
         this.djRoleId = djRoleId;
     }
 
-    public String getMusicChannelId() {
-        return musicChannelId;
+    public String getMusicTextChannelId() {
+        return musicTextChannelId;
     }
 
-    public void setMusicChannelId(String musicChannelId) {
-        this.musicChannelId = musicChannelId;
+    public void setMusicTextChannelId(String musicTextChannelId) {
+        this.musicTextChannelId = musicTextChannelId;
     }
 
     public String getMusicVoiceChannelId() {

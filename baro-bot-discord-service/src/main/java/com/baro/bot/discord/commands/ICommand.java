@@ -48,14 +48,10 @@ public interface ICommand {
         return null;
     }
 
-    ;
-
     @Nullable
     default EnumSet<Permission> getBotPermissions() {
         return null;
     }
-
-    ;
 
     default long getCooldown() {
         return 10;

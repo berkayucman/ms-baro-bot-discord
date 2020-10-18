@@ -43,7 +43,7 @@ public class CommandManager {
         this.commands = new HashMap();
 
         //ADMIN
-        commands.put("prefix", new PrefixCmd(guildSettingsReository));
+        commands.put("prefix", new PrefixCmd(guildSettingsReository, botConfig));
         commands.put("setdj", new MusicDjRoleIdCmd(guildSettingsReository));
         commands.put("settc", new MusicTextChannelIdCmd(guildSettingsReository));
         commands.put("setvc", new MusicVoiceChannelIdCmd(guildSettingsReository));

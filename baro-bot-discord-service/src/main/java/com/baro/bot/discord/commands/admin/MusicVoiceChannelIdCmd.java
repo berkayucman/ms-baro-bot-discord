@@ -26,19 +26,20 @@ public class MusicVoiceChannelIdCmd extends ACommand implements ICommand {
     @Override
     public void execute(CommandContext ctx) {
         String guildId = ctx.getEvent().getGuild().getId();
-        if (ctx.getArgs().equalsIgnoreCase("none")) {
+        if (ctx.getArgs().isEmpty()) {
             guildSettingsReository.setMusicVoiceChannelId("", guildId);
             sendSuccess(ctx, "Music can now be played in any channel");
+
+            return;
+        }
+        List<VoiceChannel> list = FinderUtil.findVoiceChannels(ctx.getArgs(), ctx.getEvent().getGuild());
+        if (list.isEmpty()) {
+            sendError(ctx, "No Voice Channels found matching \"" + ctx.getArgs() + "\"");
+        } else if (list.size() > 1) {
+            ctx.getEvent().getChannel().sendMessage(FormatUtil.listOfVChannels(list, ctx.getArgs())).queue();
         } else {
-            List<VoiceChannel> list = FinderUtil.findVoiceChannels(ctx.getArgs(), ctx.getEvent().getGuild());
-            if (list.isEmpty()) {
-                sendError(ctx, "No Voice Channels found matching \"" + ctx.getArgs() + "\"");
-            } else if (list.size() > 1) {
-                ctx.getEvent().getChannel().sendMessage(FormatUtil.listOfVChannels(list, ctx.getArgs())).queue();
-            } else {
-                guildSettingsReository.setMusicVoiceChannelId(list.get(0).getId(), guildId);
-                sendSuccess(ctx, "Music can now only be played in **" + list.get(0).getName() + "**");
-            }
+            guildSettingsReository.setMusicVoiceChannelId(list.get(0).getId(), guildId);
+            sendSuccess(ctx, "Music can now only be played in **" + list.get(0).getName() + "**");
         }
     }
 
@@ -54,7 +55,7 @@ public class MusicVoiceChannelIdCmd extends ACommand implements ICommand {
 
     @Override
     public boolean getArgs() {
-        return true;
+        return false;
     }
 
     @Override
@@ -81,7 +82,7 @@ public class MusicVoiceChannelIdCmd extends ACommand implements ICommand {
     @Override
     public List<String> getExamples() {
         List<String> samples = new ArrayList<>();
-        samples.add("`setvc none` - Clears the voice channel for playing music. This means that users can play music from any channel that the bot can connect to (if the bot is not already in a different channel)");
+        samples.add("`setvc` - Clears the voice channel for playing music. This means that users can play music from any channel that the bot can connect to (if the bot is not already in a different channel)");
         samples.add("`setvc <channel_id | channel_name>` - Sets the voice channel for playing music. When set, the bot will only connect to the specified channel when users attempt to play music.");
         return samples;
     }

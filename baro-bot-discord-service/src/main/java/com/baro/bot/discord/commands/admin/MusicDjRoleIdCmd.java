@@ -26,20 +26,20 @@ public class MusicDjRoleIdCmd extends ACommand implements ICommand {
     @Override
     public void execute(CommandContext ctx) {
         String guildId = ctx.getEvent().getGuild().getId();
-        if (ctx.getArgs().equalsIgnoreCase("none")) {
+        if (ctx.getArgs().isEmpty()) {
             guildSettingsReository.setMusicDjRoleId("", guildId);
             sendSuccess(ctx, "DJ role cleared; Only Admins can use the DJ commands.");
+
+            return;
+        }
+        List<Role> list = FinderUtil.findRoles(ctx.getArgs(), ctx.getEvent().getGuild());
+        if (list.isEmpty()) {
+            sendError(ctx, " No Roles found matching \"" + ctx.getArgs() + "\"");
+        } else if (list.size() > 1) {
+            sendWarning(ctx, FormatUtil.listOfRoles(list, ctx.getArgs()));
         } else {
-            List<Role> list = FinderUtil.findRoles(ctx.getArgs(), ctx.getEvent().getGuild());
-            if (list.isEmpty())
-                sendError(ctx, " No Roles found matching \"" + ctx.getArgs() + "\"");
-            else if (list.size() > 1)
-                sendWarning(ctx, FormatUtil.listOfRoles(list, ctx.getArgs()));
-            else {
-                guildSettingsReository.setMusicDjRoleId(list.get(0).getId(), guildId);
-                sendSuccess(ctx, " DJ commands can now be used by users with the **"
-                        + list.get(0).getName() + "** role.");
-            }
+            guildSettingsReository.setMusicDjRoleId(list.get(0).getId(), guildId);
+            sendSuccess(ctx, " DJ commands can now be used by users with the **" + list.get(0).getName() + "** role.");
         }
     }
 
@@ -55,7 +55,7 @@ public class MusicDjRoleIdCmd extends ACommand implements ICommand {
 
     @Override
     public boolean getArgs() {
-        return true;
+        return false;
     }
 
     @Override
@@ -82,7 +82,7 @@ public class MusicDjRoleIdCmd extends ACommand implements ICommand {
     @Override
     public List<String> getExamples() {
         List<String> samples = new ArrayList<>();
-        samples.add("`setdj none` - Clears the DJ role. Only Admins will be able to use the DJ commands.");
+        samples.add("`setdj` - Clears the DJ role. Only Admins will be able to use the DJ commands.");
         samples.add("`setdj <role_id | role_name>` - Sets the DJ role. Users with this role will be able to use DJ commands.");
         samples.add("");
         samples.add("**HINT:** role mentions are not supported!");

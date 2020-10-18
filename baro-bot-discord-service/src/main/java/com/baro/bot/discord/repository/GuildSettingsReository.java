@@ -23,8 +23,8 @@ public interface GuildSettingsReository extends JpaRepository<GuildSettingsEntit
 
     @Transactional
     @Modifying
-    @Query("UPDATE guild_settings SET music_channel_id = :music_channel_id WHERE server_id = :server_id")
-    int setMusicTextChannelId(@Param("music_channel_id") String music_channel_id, @Param("server_id") String server_id);
+    @Query("UPDATE guild_settings SET music_text_channel_id = :music_text_channel_id WHERE server_id = :server_id")
+    int setMusicTextChannelId(@Param("music_text_channel_id") String music_channel_id, @Param("server_id") String server_id);
 
     @Transactional
     @Modifying
