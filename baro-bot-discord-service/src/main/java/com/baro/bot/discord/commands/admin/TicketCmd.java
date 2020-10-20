@@ -4,9 +4,9 @@ import com.baro.bot.discord.commands.ACommand;
 import com.baro.bot.discord.commands.CommandCategory;
 import com.baro.bot.discord.commands.CommandContext;
 import com.baro.bot.discord.commands.ICommand;
+import com.baro.bot.discord.config.FlagsConfig;
 import com.baro.bot.discord.util.ColorUtil;
 import com.baro.bot.discord.util.EmoteUtil;
-import com.baro.bot.discord.util.Flags;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
@@ -18,19 +18,28 @@ import java.util.List;
 
 public class TicketCmd extends ACommand implements ICommand {
 
+    private final static String CHANNEL_PREFIX = "ticket";
+    private final FlagsConfig flagsConfig;
+
+    public TicketCmd(FlagsConfig flagsConfig) {
+        this.flagsConfig = flagsConfig;
+    }
+
     private void createTicket(CommandContext ctx) {
-        ctx.getEvent().getGuild().createCategory("Tickets").queue(category -> category.createTextChannel("ticket").queue(channel -> {
-            sendSuccess(ctx, "Your new ticket channel is " + channel.getAsMention());
-            channel.getManager().setTopic(Flags.BAROBOT_TICKET_CHANNEL.toString()).setSlowmode(channel.MAX_SLOWMODE).queue();
-            Role everyone = ctx.getEvent().getGuild().getPublicRole();
-            List<Permission> deny = new ArrayList<>();
-            deny.add(Permission.MESSAGE_ADD_REACTION);
-            deny.add(Permission.MESSAGE_WRITE);
-            channel.getManager().putPermissionOverride(everyone, null, deny).queue();
-            channel.sendMessage(getTicketEmbed(ctx.getBot().getJda().getSelfUser().getName(), ctx.getBot().getJda().getSelfUser().getEffectiveAvatarUrl()).build()).queue(message -> {
-                message.addReaction(new EmoteUtil(ctx.getBot()).getEmote("paladin")).queue();
-            });
-        }));
+        ctx.getEvent().getGuild().createCategory("Tickets").queue(
+                category -> category.createTextChannel(CHANNEL_PREFIX).queue(
+                        channel -> {
+                            sendSuccess(ctx, "Your new ticket channel is " + channel.getAsMention());
+                            channel.getManager().setTopic(flagsConfig.getTicket()).setSlowmode(channel.MAX_SLOWMODE).queue();
+                            Role everyone = ctx.getEvent().getGuild().getPublicRole();
+                            List<Permission> deny = new ArrayList<>();
+                            deny.add(Permission.MESSAGE_ADD_REACTION);
+                            deny.add(Permission.MESSAGE_WRITE);
+                            channel.getManager().putPermissionOverride(everyone, null, deny).queue();
+                            channel.sendMessage(getTicketEmbed(ctx.getBot().getJda().getSelfUser().getName(),
+                                    ctx.getBot().getJda().getSelfUser().getEffectiveAvatarUrl()).build()).queue(
+                                    message -> message.addReaction(new EmoteUtil(ctx.getBot()).getEmote("paladin")).queue());
+                        }));
     }
 
     private void deleteTicket(CommandContext ctx) {
@@ -116,7 +125,7 @@ public class TicketCmd extends ACommand implements ICommand {
     @Override
     public List<String> getExamples() {
         List<String> samples = new ArrayList<>();
-        samples.add("`ticket create` - creates your ticket channel");
+        samples.add("`ticket create` - creates ticket channel");
         samples.add("`ticket close` - closes an existing user ticket/channel");
         return samples;
     }

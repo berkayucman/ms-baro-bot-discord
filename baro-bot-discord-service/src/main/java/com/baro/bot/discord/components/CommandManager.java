@@ -12,6 +12,7 @@ import com.baro.bot.discord.commands.music.*;
 import com.baro.bot.discord.commands.music.dj.*;
 import com.baro.bot.discord.commands.owner.*;
 import com.baro.bot.discord.config.BotConfig;
+import com.baro.bot.discord.config.FlagsConfig;
 import com.baro.bot.discord.repository.GuildSettingsReository;
 import com.baro.bot.discord.service.BaroBot;
 import net.dv8tion.jda.api.Permission;
@@ -34,11 +35,13 @@ public class CommandManager {
     private final Map<String, ICommand> commands;
     private final BaroBot bot;
     private final BotConfig botConfig;
+    private final FlagsConfig flagsConfig;
     private final GuildSettingsReository guildSettingsReository;
 
-    public CommandManager(BaroBot bot, BotConfig botConfig, GuildSettingsReository guildSettingsReository) {
+    public CommandManager(BaroBot bot, BotConfig botConfig, FlagsConfig flagsConfig, GuildSettingsReository guildSettingsReository) {
         this.bot = bot;
         this.botConfig = botConfig;
+        this.flagsConfig = flagsConfig;
         this.guildSettingsReository = guildSettingsReository;
         this.commands = new HashMap();
 
@@ -47,7 +50,7 @@ public class CommandManager {
         commands.put("setdj", new MusicDjRoleIdCmd(guildSettingsReository));
         commands.put("settc", new MusicTextChannelIdCmd(guildSettingsReository));
         commands.put("setvc", new MusicVoiceChannelIdCmd(guildSettingsReository));
-        commands.put("ticket", new TicketCmd());
+        commands.put("ticket", new TicketCmd(flagsConfig));
 
         // INFORMATION
         commands.put("emote", new EmoteCmd());
