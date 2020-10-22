@@ -29,6 +29,8 @@ public class DebugCmd extends ACommand implements ICommand {
         sb.append("\n\nJMusicBot Information:")
                 .append("\n  Owner ID = ").append(String.join("\n", botConfig.getBotOwnerIds()))
                 .append("\n  Prefix = ").append(botConfig.getPrefix());
+        // TODO: FIX ME
+
 //                .append("\n  NPImages = ").append(BotSettingsManager.getInstance().getSettings().isNpimages())
 //                .append("\n  SongInStatus = ").append(BotSettingsManager.getInstance().getSettings().isTrackInStatus())
 //                .append("\n  StayInChannel = ").append(BotSettingsManager.getInstance().getSettings().isAutoLeave());

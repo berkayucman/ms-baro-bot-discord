@@ -7,7 +7,6 @@ import com.baro.bot.discord.commands.CommandContext;
 import com.baro.bot.discord.commands.ICommand;
 import com.baro.bot.discord.util.ColorUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Emote;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,24 +18,6 @@ public class EmoteCmd extends ACommand implements ICommand {
         String str = ctx.getArgs();
         ColorUtil colorUtil = new ColorUtil();
         EmbedBuilder eb = new EmbedBuilder().setColor(colorUtil.getRandomColor());
-        if (str.matches("<:.*:\\d+>")) {
-            String id = str.replaceAll("<:.*:(\\d+)>", "$1");
-            Emote emote = ctx.getEvent().getJDA().getEmoteById(id);
-            if (emote == null) {
-                sendError(ctx, "invalid characters");
-                return;
-            }
-            eb.setTitle("Unknown emote:")
-                    .addField("ID", "emote.getId()", false)
-                    .addField("Guild", (emote.getGuild() == null ? "Unknown" : "**" + emote.getGuild().getName() + "**"), false)
-                    .addField("URL", emote.getImageUrl(), false);
-            ctx.getEvent().getChannel().sendMessage(eb.build()).queue();
-            return;
-        }
-        if (str.codePoints().count() > 10) {
-            ctx.getEvent().getChannel().sendMessage("Invalid emote, or input is too long").queue();
-            return;
-        }
         eb.setTitle("Emoji/Character info");
         List<String> fullString = new ArrayList<>();
         str.codePoints().forEachOrdered(code -> {
@@ -67,7 +48,7 @@ public class EmoteCmd extends ACommand implements ICommand {
 
     @Override
     public String getDescription() {
-        return "Views info on an emote or characters";
+        return "This command shows detailed information about characters.";
     }
 
     @Override

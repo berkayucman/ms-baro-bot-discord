@@ -107,4 +107,8 @@ public class BaroBot {
     public PlaylistLoader getPlaylistLoader() {
         return playlistLoader;
     }
+
+    public Listener getListener() {
+        return listener;
+    }
 }

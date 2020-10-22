@@ -29,7 +29,7 @@ public class GuildListCmd extends ACommand implements ICommand {
                 .setFinalAction(m -> {
                     try {
                         m.clearReactions().queue();
-                    } catch (PermissionException ex) {
+                    } catch (PermissionException | IllegalStateException e) {
                         m.delete().queue();
                     }
                 })

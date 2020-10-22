@@ -25,7 +25,7 @@ public class MusicDjRoleIdCmd extends ACommand implements ICommand {
 
     @Override
     public void execute(CommandContext ctx) {
-        String guildId = ctx.getEvent().getGuild().getId();
+        Long guildId = ctx.getEvent().getGuild().getIdLong();
         if (ctx.getArgs().isEmpty()) {
             guildSettingsReository.setMusicDjRoleId("", guildId);
             sendSuccess(ctx, "DJ role cleared; Only Admins can use the DJ commands.");

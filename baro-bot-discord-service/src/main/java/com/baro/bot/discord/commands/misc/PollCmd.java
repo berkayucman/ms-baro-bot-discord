@@ -22,7 +22,7 @@ public class PollCmd implements ICommand {
         }
 
         String question = answerList.get(0); // first arg is question
-        answerList.remove(0); // remove the question from list ... now only answeres there
+        answerList.remove(0); // remove the question from list ... now only answers there
 
         List<String> emojiListString = new ArrayList<>();
         List<String> emojiListUniCode = new ArrayList<>();

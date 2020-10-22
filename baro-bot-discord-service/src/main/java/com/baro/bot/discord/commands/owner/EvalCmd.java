@@ -5,6 +5,7 @@ import com.baro.bot.discord.commands.ACommand;
 import com.baro.bot.discord.commands.CommandCategory;
 import com.baro.bot.discord.commands.CommandContext;
 import com.baro.bot.discord.commands.ICommand;
+import net.dv8tion.jda.api.entities.ChannelType;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -20,8 +21,11 @@ public class EvalCmd extends ACommand implements ICommand {
         se.put("event", ctx.getEvent());
         se.put("message", ctx.getEvent().getMessage());
         se.put("jda", ctx.getEvent().getJDA());
-        se.put("guild", ctx.getEvent().getGuild());
         se.put("channel", ctx.getEvent().getChannel());
+
+        if (ctx.getEvent().getChannelType() == ChannelType.TEXT) {
+            se.put("guild", ctx.getEvent().getGuild());
+        }
         try {
             ctx.getEvent().getChannel().sendMessage("Evaluated Successfully:\n```\n" + se.eval(ctx.getArgs()) + " ```").queue();
         } catch (Exception e) {
@@ -31,7 +35,7 @@ public class EvalCmd extends ACommand implements ICommand {
 
     @Override
     public String getName() {
-        return "evalj";
+        return "eval";
     }
 
     @Override
@@ -57,17 +61,17 @@ public class EvalCmd extends ACommand implements ICommand {
     @Override
     public List<String> getExamples() {
         List<String> samples = new ArrayList<>();
-        samples.add("`evalj <code>`");
+        samples.add("`eval <code>`");
         samples.add("");
-        samples.add("**__EXAMPLE 1__**\nevalj return 5 + 5");
+        samples.add("**__EXAMPLE 1__**\neval return 5 + 5");
         samples.add("");
-        samples.add("**__EXAMPLE 2__**\n```css\nevalj channel.sendMessage(new EmbedBuilder()\n" +
+        samples.add("**__EXAMPLE 2__**\n```css\neval channel.sendMessage(new EmbedBuilder()\n" +
                 ".setAuthor(message.author.getName(), null, message.author.avatarUrl)\n" +
                 ".setTitle(\"Field Test\")\n" +
                 ".addField(\"Title - Value text\", \"YOOOOOOOO\", false)\n" +
                 ".setDescription(\"Testing horizontal field\").build()).queue()\n```);");
         samples.add("");
-        samples.add("**__EXAMPLE 3__**\nevalj Math.pow(2,5)");
+        samples.add("**__EXAMPLE 3__**\neval Math.pow(2,5)");
         return samples;
     }
 }

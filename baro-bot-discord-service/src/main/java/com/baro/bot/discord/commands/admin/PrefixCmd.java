@@ -32,7 +32,7 @@ public class PrefixCmd extends ACommand implements ICommand {
             return;
         }
 
-        String guildId = ctx.getEvent().getGuild().getId();
+        Long guildId = ctx.getEvent().getGuild().getIdLong();
         if (ctx.getArgs().isEmpty()) {
             guildSettingsReository.setPrefix(botConfig.getPrefix(), guildId);
             sendSuccess(ctx, "Prefix cleared.");

@@ -55,7 +55,7 @@ import javax.annotation.Nullable;
 @Component
 public class Listener extends ListenerAdapter {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(Listener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Listener.class);
     private final BotConfig botConfig;
     private final BaroBot bot;
     private final CommandManager manager;
@@ -66,24 +66,22 @@ public class Listener extends ListenerAdapter {
         this.manager = manager;
     }
 
-    //JDA Events
     @Override
     public void onReady(ReadyEvent event) {
         if (event.getJDA().getGuilds().isEmpty()) {
             LOGGER.warn("This bot is not on any guilds! Use the following link to add the bot to your guilds!");
             LOGGER.warn(event.getJDA().getInviteUrl(Permission.ADMINISTRATOR));
         }
-//        event.getJDA().getGuilds().forEach(guild -> bot.getPlayerManager().setUpHandler(guild));
+        event.getJDA().getGuilds().forEach(guild -> bot.getPlayerManager().setUpHandler(guild));
     }
 
     @Override
     public void onMessageReceived(@Nullable MessageReceivedEvent event) {
+
         if (event.isWebhookMessage() || event.getAuthor().isBot()) return;
-        String prefix = botConfig.getPrefix();
-        String raw = event.getMessage().getContentRaw();
-        if (raw.startsWith(prefix)) {
-            manager.handle(event);
-        }
+
+        manager.handle(event);
+
 //        new VoteSystem().handleVotes(bot, event);
     }
 
@@ -399,5 +397,9 @@ public class Listener extends ListenerAdapter {
     }
 
     public void onEmoteUpdateRoles(@Nonnull EmoteUpdateRolesEvent event) {
+    }
+
+    public CommandManager getManager() {
+        return manager;
     }
 }

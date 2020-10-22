@@ -16,7 +16,9 @@ public class LyricsCmd extends MusicCommand implements ICommand {
 
     @Override
     public void execute(CommandContext ctx) {
+
         if (!init(ctx)) return;
+        if (!isDj(ctx)) return;
 
         ctx.getEvent().getChannel().sendTyping().queue();
         String title;

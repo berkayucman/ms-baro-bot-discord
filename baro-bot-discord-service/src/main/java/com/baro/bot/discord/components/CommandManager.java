@@ -13,8 +13,10 @@ import com.baro.bot.discord.commands.music.dj.*;
 import com.baro.bot.discord.commands.owner.*;
 import com.baro.bot.discord.config.BotConfig;
 import com.baro.bot.discord.config.FlagsConfig;
+import com.baro.bot.discord.model.GuildSettingsEntity;
 import com.baro.bot.discord.repository.GuildSettingsReository;
 import com.baro.bot.discord.service.BaroBot;
+import com.sun.istack.NotNull;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -26,6 +28,7 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Component
@@ -110,14 +113,22 @@ public class CommandManager {
     }
 
     public void handle(MessageReceivedEvent event) {
-        String prefix = botConfig.getPrefix();
+
+        String prefix = event.getChannelType() == ChannelType.PRIVATE ? botConfig.getPrefix() : getPrefix(event.getGuild().getIdLong());
+
+        if (!event.getMessage().getContentRaw().startsWith(prefix)) {
+            return;
+        }
+
         String[] args = event.getMessage().getContentRaw()
                 .replaceFirst("(?i)" + Pattern.quote(prefix), "")
                 .split("\\s+");
 
         String invoke = args[0].toLowerCase();
-        ICommand cmd = this.getCommand(invoke);
+        ICommand cmd = getCommand(invoke);
+
         if (cmd == null) return;
+
         CommandContext ctx = new CommandContext(bot, prefix, args, event, invoke, this);
         if (!argsProvided(ctx, cmd)) {
             event.getChannel().sendMessage("Please provide arguments").queue();
@@ -206,7 +217,51 @@ public class CommandManager {
         return !ctx.getEvent().getTextChannel().isNSFW() && cmd.isNsfw();
     }
 
+    @NotNull
+    public String getPrefix(Long serverId) {
+        Optional<GuildSettingsEntity> settings = guildSettingsReository.findById(serverId);
+        if (settings.isPresent()) {
+            return settings.get().getPrefix();
+        }
+        return botConfig.getPrefix();
+    }
+
+    @NotNull
+    public String getMusicTextChannelId(Long serverId) {
+        Optional<GuildSettingsEntity> settings = guildSettingsReository.findById(serverId);
+        if (settings.isPresent()) {
+            return settings.get().getMusicTextChannelId();
+        }
+        return "";
+    }
+
+    @NotNull
+    public String getMusicVoiceChannelId(Long serverId) {
+        Optional<GuildSettingsEntity> settings = guildSettingsReository.findById(serverId);
+        if (settings.isPresent()) {
+            return settings.get().getMusicVoiceChannelId();
+        }
+        return "";
+    }
+
+    @NotNull
+    public String getDjRoleId(Long serverId) {
+        Optional<GuildSettingsEntity> settings = guildSettingsReository.findById(serverId);
+        if (settings.isPresent()) {
+            return settings.get().getDjRoleId();
+        }
+        return "";
+    }
+
     public Map<String, ICommand> getCommands() {
         return commands;
+    }
+
+    public BotConfig getBotConfig() {
+        return botConfig;
+    }
+
+    public GuildSettingsReository getGuildSettingsReository() {
+        return guildSettingsReository;
     }
 }

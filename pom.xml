@@ -38,6 +38,8 @@
 
         <!-- DISCORD-->
         <jda.version>4.2.0_209</jda.version>
+        <lavaplayer.version>1.3.59</lavaplayer.version>
+        <jda.utils.version>3.0.4</jda.utils.version>
     </properties>
 
     <dependencyManagement>

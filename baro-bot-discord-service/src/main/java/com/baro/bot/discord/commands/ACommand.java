@@ -30,4 +30,11 @@ public abstract class ACommand {
                 throwable -> ctx.getEvent().getChannel().sendMessage(eb.build()).queue()
         );
     }
+
+    public void replayDM(CommandContext ctx, String message) {
+        ctx.getEvent().getAuthor().openPrivateChannel().queue(
+                privateChannel -> privateChannel.sendMessage(message).queue(),
+                throwable -> ctx.getEvent().getChannel().sendMessage(message).queue()
+        );
+    }
 }

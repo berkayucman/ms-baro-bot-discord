@@ -25,7 +25,7 @@ public class MusicTextChannelIdCmd extends ACommand implements ICommand {
 
     @Override
     public void execute(CommandContext ctx) {
-        String guildId = ctx.getEvent().getGuild().getId();
+        Long guildId = ctx.getEvent().getGuild().getIdLong();
         if (ctx.getArgs().isEmpty()) {
             guildSettingsReository.setMusicTextChannelId("", guildId);
             sendSuccess(ctx, "Music commands can now be used in any channel");

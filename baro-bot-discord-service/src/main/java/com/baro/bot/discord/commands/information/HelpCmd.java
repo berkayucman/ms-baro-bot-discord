@@ -31,7 +31,7 @@ public class HelpCmd extends ACommand implements ICommand {
     private void handleCommandDescription(CommandContext ctx) {
         ICommand cmd = ctx.getCommandManager().getCommand(ctx.getArgs());
         if (cmd == null) {
-//            ctx.getEvent().getChannel().sendMessage("Command not found").queue();
+            replayDM(ctx, "command not found");
             return;
         }
         User user = ctx.getEvent().getAuthor();
@@ -175,5 +175,10 @@ public class HelpCmd extends ACommand implements ICommand {
     @Override
     public CommandCategory getCategory() {
         return CommandCategory.INFORMATION;
+    }
+
+    @Override
+    public boolean guildOnly() {
+        return false;
     }
 }
