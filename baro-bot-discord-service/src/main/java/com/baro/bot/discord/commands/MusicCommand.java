@@ -22,7 +22,7 @@ public abstract class MusicCommand extends ACommand {
     }
 
     public boolean init(CommandContext ctx) {
-        boolean result = validVoiceState(ctx) && isMusicTextChannel(ctx);
+        boolean result = isMusicTextChannel(ctx) && validVoiceState(ctx);
         if (result)
             setupHandler(ctx);
         return result;
@@ -85,10 +85,6 @@ public abstract class MusicCommand extends ACommand {
         String musicChannelId = ctx.getCommandManager().getMusicTextChannelId(ctx.getEvent().getGuild().getIdLong());
         if (musicChannelId.equals(ctx.getEvent().getChannel().getId()) || musicChannelId.isEmpty()) return true;
         TextChannel musicTextChannel = ctx.getEvent().getGuild().getTextChannelById(musicChannelId);
-        try {
-            ctx.getEvent().getMessage().delete().queue();
-        } catch (PermissionException ignore) {
-        }
         sendError(ctx, "You can only use that command in" + musicTextChannel.getAsMention() + "!");
         return false;
     }

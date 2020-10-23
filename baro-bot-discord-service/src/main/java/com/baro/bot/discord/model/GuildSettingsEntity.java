@@ -26,21 +26,11 @@ public class GuildSettingsEntity {
     private String welcomeDm;
     @Column(nullable = false)
     private String serverAvatar;
-    @Column(nullable = false)
-    private String djRoleId;
-    @Column(nullable = false)
-    private String musicTextChannelId;
-    @Column(nullable = false)
-    private String musicVoiceChannelId;
-    @Column(nullable = false)
-    private boolean repeatMode;
-    @Column(nullable = false)
-    private String defaultPlaylist;
 
     public GuildSettingsEntity() {
     }
 
-    public GuildSettingsEntity(Long serverId, String prefix, String serverName, boolean welcomeMessage, String welcomeAvatar, String ticketMessage, String welcomeDm, String serverAvatar, String djRoleId, String musicTextChannelId, String musicVoiceChannelId, boolean repeatMode, String defaultPlaylist) {
+    public GuildSettingsEntity(Long serverId, String prefix, String serverName, boolean welcomeMessage, String welcomeAvatar, String ticketMessage, String welcomeDm, String serverAvatar) {
         this.serverId = serverId;
         this.prefix = prefix;
         this.serverName = serverName;
@@ -49,13 +39,7 @@ public class GuildSettingsEntity {
         this.ticketMessage = ticketMessage;
         this.welcomeDm = welcomeDm;
         this.serverAvatar = serverAvatar;
-        this.djRoleId = djRoleId;
-        this.musicTextChannelId = musicTextChannelId;
-        this.musicVoiceChannelId = musicVoiceChannelId;
-        this.repeatMode = repeatMode;
-        this.defaultPlaylist = defaultPlaylist;
     }
-
 
     public Long getServerId() {
         return serverId;
@@ -119,45 +103,5 @@ public class GuildSettingsEntity {
 
     public void setServerAvatar(String serverAvatar) {
         this.serverAvatar = serverAvatar;
-    }
-
-    public String getDjRoleId() {
-        return djRoleId;
-    }
-
-    public void setDjRoleId(String djRoleId) {
-        this.djRoleId = djRoleId;
-    }
-
-    public String getMusicTextChannelId() {
-        return musicTextChannelId;
-    }
-
-    public void setMusicTextChannelId(String musicTextChannelId) {
-        this.musicTextChannelId = musicTextChannelId;
-    }
-
-    public String getMusicVoiceChannelId() {
-        return musicVoiceChannelId;
-    }
-
-    public void setMusicVoiceChannelId(String musicVoiceChannelId) {
-        this.musicVoiceChannelId = musicVoiceChannelId;
-    }
-
-    public boolean isRepeatMode() {
-        return repeatMode;
-    }
-
-    public void setRepeatMode(boolean repeatMode) {
-        this.repeatMode = repeatMode;
-    }
-
-    public String getDefaultPlaylist() {
-        return defaultPlaylist;
-    }
-
-    public void setDefaultPlaylist(String defaultPlaylist) {
-        this.defaultPlaylist = defaultPlaylist;
     }
 }

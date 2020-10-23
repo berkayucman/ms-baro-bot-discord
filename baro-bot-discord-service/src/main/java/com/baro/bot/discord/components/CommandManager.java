@@ -14,7 +14,9 @@ import com.baro.bot.discord.commands.owner.*;
 import com.baro.bot.discord.config.BotConfig;
 import com.baro.bot.discord.config.FlagsConfig;
 import com.baro.bot.discord.model.GuildSettingsEntity;
-import com.baro.bot.discord.repository.GuildSettingsReository;
+import com.baro.bot.discord.model.MusicSettingsEntity;
+import com.baro.bot.discord.repository.GuildSettingsRepository;
+import com.baro.bot.discord.repository.MusicSettingsRepository;
 import com.baro.bot.discord.service.BaroBot;
 import com.sun.istack.NotNull;
 import net.dv8tion.jda.api.Permission;
@@ -39,20 +41,22 @@ public class CommandManager {
     private final BaroBot bot;
     private final BotConfig botConfig;
     private final FlagsConfig flagsConfig;
-    private final GuildSettingsReository guildSettingsReository;
+    private final GuildSettingsRepository guildSettingsRepository;
+    private final MusicSettingsRepository musicSettingsRepository;
 
-    public CommandManager(BaroBot bot, BotConfig botConfig, FlagsConfig flagsConfig, GuildSettingsReository guildSettingsReository) {
+    public CommandManager(BaroBot bot, BotConfig botConfig, FlagsConfig flagsConfig, GuildSettingsRepository guildSettingsRepository, MusicSettingsRepository musicSettingsRepository) {
         this.bot = bot;
         this.botConfig = botConfig;
         this.flagsConfig = flagsConfig;
-        this.guildSettingsReository = guildSettingsReository;
+        this.guildSettingsRepository = guildSettingsRepository;
+        this.musicSettingsRepository = musicSettingsRepository;
         this.commands = new HashMap();
 
         //ADMIN
-        commands.put("prefix", new PrefixCmd(guildSettingsReository, botConfig));
-        commands.put("setdj", new MusicDjRoleIdCmd(guildSettingsReository));
-        commands.put("settc", new MusicTextChannelIdCmd(guildSettingsReository));
-        commands.put("setvc", new MusicVoiceChannelIdCmd(guildSettingsReository));
+        commands.put("prefix", new PrefixCmd(guildSettingsRepository, botConfig));
+        commands.put("setdj", new MusicDjRoleIdCmd(musicSettingsRepository));
+        commands.put("settc", new MusicTextChannelIdCmd(musicSettingsRepository));
+        commands.put("setvc", new MusicVoiceChannelIdCmd(musicSettingsRepository));
         commands.put("ticket", new TicketCmd(flagsConfig));
 
         // INFORMATION
@@ -219,7 +223,7 @@ public class CommandManager {
 
     @NotNull
     public String getPrefix(Long serverId) {
-        Optional<GuildSettingsEntity> settings = guildSettingsReository.findById(serverId);
+        Optional<GuildSettingsEntity> settings = guildSettingsRepository.findById(serverId);
         if (settings.isPresent()) {
             return settings.get().getPrefix();
         }
@@ -228,7 +232,7 @@ public class CommandManager {
 
     @NotNull
     public String getMusicTextChannelId(Long serverId) {
-        Optional<GuildSettingsEntity> settings = guildSettingsReository.findById(serverId);
+        Optional<MusicSettingsEntity> settings = musicSettingsRepository.findById(serverId);
         if (settings.isPresent()) {
             return settings.get().getMusicTextChannelId();
         }
@@ -237,7 +241,7 @@ public class CommandManager {
 
     @NotNull
     public String getMusicVoiceChannelId(Long serverId) {
-        Optional<GuildSettingsEntity> settings = guildSettingsReository.findById(serverId);
+        Optional<MusicSettingsEntity> settings = musicSettingsRepository.findById(serverId);
         if (settings.isPresent()) {
             return settings.get().getMusicVoiceChannelId();
         }
@@ -246,7 +250,7 @@ public class CommandManager {
 
     @NotNull
     public String getDjRoleId(Long serverId) {
-        Optional<GuildSettingsEntity> settings = guildSettingsReository.findById(serverId);
+        Optional<MusicSettingsEntity> settings = musicSettingsRepository.findById(serverId);
         if (settings.isPresent()) {
             return settings.get().getDjRoleId();
         }
@@ -261,7 +265,7 @@ public class CommandManager {
         return botConfig;
     }
 
-    public GuildSettingsReository getGuildSettingsReository() {
-        return guildSettingsReository;
+    public GuildSettingsRepository getGuildSettingsReository() {
+        return guildSettingsRepository;
     }
 }

@@ -4,7 +4,7 @@ import com.baro.bot.discord.commands.ACommand;
 import com.baro.bot.discord.commands.CommandCategory;
 import com.baro.bot.discord.commands.CommandContext;
 import com.baro.bot.discord.commands.ICommand;
-import com.baro.bot.discord.repository.GuildSettingsReository;
+import com.baro.bot.discord.repository.MusicSettingsRepository;
 import com.baro.bot.discord.util.FormatUtil;
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import net.dv8tion.jda.api.Permission;
@@ -17,17 +17,17 @@ import java.util.List;
 
 public class MusicDjRoleIdCmd extends ACommand implements ICommand {
 
-    private final GuildSettingsReository guildSettingsReository;
+    private final MusicSettingsRepository musicSettingsRepository;
 
-    public MusicDjRoleIdCmd(GuildSettingsReository guildSettingsReository) {
-        this.guildSettingsReository = guildSettingsReository;
+    public MusicDjRoleIdCmd(MusicSettingsRepository musicSettingsRepository) {
+        this.musicSettingsRepository = musicSettingsRepository;
     }
 
     @Override
     public void execute(CommandContext ctx) {
         Long guildId = ctx.getEvent().getGuild().getIdLong();
         if (ctx.getArgs().isEmpty()) {
-            guildSettingsReository.setMusicDjRoleId("", guildId);
+            musicSettingsRepository.setMusicDjRoleId("", guildId);
             sendSuccess(ctx, "DJ role cleared; Only Admins can use the DJ commands.");
 
             return;
@@ -38,7 +38,7 @@ public class MusicDjRoleIdCmd extends ACommand implements ICommand {
         } else if (list.size() > 1) {
             sendWarning(ctx, FormatUtil.listOfRoles(list, ctx.getArgs()));
         } else {
-            guildSettingsReository.setMusicDjRoleId(list.get(0).getId(), guildId);
+            musicSettingsRepository.setMusicDjRoleId(list.get(0).getId(), guildId);
             sendSuccess(ctx, " DJ commands can now be used by users with the **" + list.get(0).getName() + "** role.");
         }
     }

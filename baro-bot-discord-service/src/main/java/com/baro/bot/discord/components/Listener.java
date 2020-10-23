@@ -72,7 +72,7 @@ public class Listener extends ListenerAdapter {
             LOGGER.warn("This bot is not on any guilds! Use the following link to add the bot to your guilds!");
             LOGGER.warn(event.getJDA().getInviteUrl(Permission.ADMINISTRATOR));
         }
-        event.getJDA().getGuilds().forEach(guild -> bot.getPlayerManager().setUpHandler(guild));
+//        event.getJDA().getGuilds().forEach(guild -> bot.getPlayerManager().setUpHandler(guild));
     }
 
     @Override

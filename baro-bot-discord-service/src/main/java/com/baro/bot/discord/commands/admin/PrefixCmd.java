@@ -5,7 +5,7 @@ import com.baro.bot.discord.commands.CommandCategory;
 import com.baro.bot.discord.commands.CommandContext;
 import com.baro.bot.discord.commands.ICommand;
 import com.baro.bot.discord.config.BotConfig;
-import com.baro.bot.discord.repository.GuildSettingsReository;
+import com.baro.bot.discord.repository.GuildSettingsRepository;
 import net.dv8tion.jda.api.Permission;
 
 import java.util.ArrayList;
@@ -14,12 +14,12 @@ import java.util.List;
 
 public class PrefixCmd extends ACommand implements ICommand {
 
-    private final GuildSettingsReository guildSettingsReository;
+    private final GuildSettingsRepository guildSettingsRepository;
     private static final int MAX_PREFIX_LENGTH = 3;
     private final BotConfig botConfig;
 
-    public PrefixCmd(GuildSettingsReository guildSettingsReository, BotConfig botConfig) {
-        this.guildSettingsReository = guildSettingsReository;
+    public PrefixCmd(GuildSettingsRepository guildSettingsRepository, BotConfig botConfig) {
+        this.guildSettingsRepository = guildSettingsRepository;
         this.botConfig = botConfig;
     }
 
@@ -34,10 +34,10 @@ public class PrefixCmd extends ACommand implements ICommand {
 
         Long guildId = ctx.getEvent().getGuild().getIdLong();
         if (ctx.getArgs().isEmpty()) {
-            guildSettingsReository.setPrefix(botConfig.getPrefix(), guildId);
+            guildSettingsRepository.setPrefix(botConfig.getPrefix(), guildId);
             sendSuccess(ctx, "Prefix cleared.");
         } else {
-            guildSettingsReository.setPrefix(ctx.getArgs(), guildId);
+            guildSettingsRepository.setPrefix(ctx.getArgs(), guildId);
             sendSuccess(ctx, "Custom prefix set to `" + ctx.getArgs() + "` on *" + ctx.getEvent().getGuild().getName() + "*");
         }
     }
