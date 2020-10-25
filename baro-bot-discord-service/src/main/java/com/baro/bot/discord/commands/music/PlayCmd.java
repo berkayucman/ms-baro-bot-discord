@@ -17,12 +17,16 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.exceptions.PermissionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class PlayCmd extends MusicCommand implements ICommand {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlayCmd.class);
 
     @Override
     public void execute(CommandContext ctx) {
@@ -162,13 +166,13 @@ public class PlayCmd extends MusicCommand implements ICommand {
 
         @Override
         public void trackLoaded(AudioTrack track) {
-            System.out.println("[PlayerManager] Track Loaded");
+            LOGGER.info("[PlayerManager] Track Loaded");
             loadSingle(track, null);
         }
 
         @Override
         public void playlistLoaded(AudioPlaylist playlist) {
-            System.out.println("[PlayerManager] Playlist Loaded");
+            LOGGER.info("[PlayerManager] Playlist Loaded");
             if (pplay) {
                 new MusicUtils(ctx.getBot()).addPlaylistEmbed(playlist, ctx.getEvent().getMessage());
                 loadPlaylist(playlist, null);
@@ -195,7 +199,7 @@ public class PlayCmd extends MusicCommand implements ICommand {
 
         @Override
         public void noMatches() {
-            System.out.println("[PlayerManager] No Matches");
+            LOGGER.info("[PlayerManager] No Matches");
             if (ytsearch)
                 m.editMessage(FormatUtil.filter("No results found for `" + ctx.getArgs() + "`.")).queue();
             else
@@ -207,7 +211,7 @@ public class PlayCmd extends MusicCommand implements ICommand {
 
         @Override
         public void loadFailed(FriendlyException throwable) {
-            System.out.println("[PlayerManager] Load Failed");
+            LOGGER.info("[PlayerManager] Load Failed");
             if (throwable.severity == Severity.COMMON)
                 m.editMessage("Error loading: " + throwable.getMessage()).queue();
             else

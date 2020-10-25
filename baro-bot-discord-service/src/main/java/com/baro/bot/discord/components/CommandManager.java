@@ -82,7 +82,8 @@ public class CommandManager {
         commands.put("forceskip", new ForceskipCmd());
         commands.put("pause", new PauseCmd());
         commands.put("playnext", new PlaynextCmd());
-        commands.put("repeat", new PlaylistRepeatCmd(musicSettingsRepository));
+        commands.put("prepeat", new PlaylistRepeatCmd(musicSettingsRepository));
+        commands.put("repeat", new RepeatCmd(musicSettingsRepository));
         commands.put("seek", new SeekCmd());
         commands.put("skipto", new SkiptoCmd());
         commands.put("volume", new VolumeCmd());

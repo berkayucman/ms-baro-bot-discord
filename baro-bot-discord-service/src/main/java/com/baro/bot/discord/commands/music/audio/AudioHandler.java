@@ -103,9 +103,14 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         // if the track ended normally, and we're in repeat mode, re-add it to the queue
         Optional<MusicSettingsEntity> musicSettingsEntity = musicSettingsRepository.findById(guildId);
-        boolean repeat = musicSettingsEntity.isPresent() && musicSettingsEntity.get().isPlaylistRepeat();
-        if (endReason == AudioTrackEndReason.FINISHED && repeat) {
+        boolean prepeat = musicSettingsEntity.isPresent() && musicSettingsEntity.get().isPlaylistRepeat();
+        if (endReason == AudioTrackEndReason.FINISHED && prepeat) {
             queue.add(new QueuedTrack(track.makeClone(), track.getUserData(Long.class) == null ? 0L : track.getUserData(Long.class)));
+        }
+
+        boolean repeat = musicSettingsEntity.isPresent() && musicSettingsEntity.get().isTrackRepeat();
+        if (endReason == AudioTrackEndReason.FINISHED && repeat) {
+            queue.addAt(0, new QueuedTrack(track.makeClone(), track.getUserData(Long.class) == null ? 0L : track.getUserData(Long.class)));
         }
 
         if (queue.isEmpty()) {
