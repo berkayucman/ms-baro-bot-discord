@@ -15,11 +15,11 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -33,6 +33,7 @@ public class PlayCmd extends MusicCommand implements ICommand {
 
         if (!init(ctx)) return;
 
+        // play cmd without arguments and without attachment
         if (ctx.getArgs().isEmpty() && ctx.getEvent().getMessage().getAttachments().isEmpty()) {
             AudioHandler handler = (AudioHandler) ctx.getEvent().getGuild().getAudioManager().getSendingHandler();
             if (handler.getPlayer().getPlayingTrack() != null && handler.getPlayer().isPaused()) {
@@ -50,6 +51,21 @@ public class PlayCmd extends MusicCommand implements ICommand {
                 ? ctx.getArgs().substring(1, ctx.getArgs().length() - 1)
                 : ctx.getArgs().isEmpty() ? ctx.getEvent().getMessage().getAttachments().get(0).getUrl() : ctx.getArgs();
 
+
+        boolean isSpotifyTrack = args.toLowerCase().contains("https://open.spotify.com/track/");
+        boolean isSpotifyPlaylist = args.toLowerCase().contains("https://open.spotify.com/playlist/");
+
+        if (isSpotifyTrack) {
+            playSpotifyTrack(args, ctx);
+            return;
+        }
+
+        if (isSpotifyPlaylist) {
+            playSpotifyPlaylist(args, ctx);
+            return;
+        }
+
+        // if args are not a url then search in youtube
         if (!FormatUtil.isUrl(args)) {
             args = "ytsearch:" + args;
         }
@@ -57,11 +73,36 @@ public class PlayCmd extends MusicCommand implements ICommand {
         String track = args;
 
         if (ctx.getEvent().getMessage().getContentRaw().split(" ")[0].toLowerCase().contains("pplay")) {
-            ctx.getBot().getPlayerManager().loadItemOrdered(ctx.getEvent().getGuild(), track, new ResultHandler(ctx.getEvent().getMessage(), ctx, false, true));
+            ctx.getBot().getPlayerManager().loadItemOrdered(ctx.getEvent().getGuild(), track,
+                    new ResultHandler(ctx, false, true, false));
         } else {
-            ctx.getEvent().getChannel().sendMessage(" Loading... `[" + args + "]`").queue(m ->
-                    ctx.getBot().getPlayerManager().loadItemOrdered(ctx.getEvent().getGuild(), track,
-                            new ResultHandler(m, ctx, false, false)));
+            ctx.getBot().getPlayerManager().loadItemOrdered(ctx.getEvent().getGuild(), track, new ResultHandler(ctx, true, false, false));
+        }
+    }
+
+    private void playSpotifyPlaylist(String args, CommandContext ctx) {
+        MusicUtils mu = new MusicUtils(ctx.getBot());
+        try {
+            List<String> tracks = mu.getSpotifyPlaylist(args);
+            mu.spotifyPlaylistAddEmbed(tracks, ctx.getEvent().getAuthor(), ctx.getEvent().getTextChannel());
+            for (int i = 0; i < tracks.size(); i++) {
+                String track = "ytsearch:" + tracks.get(i);
+                tracks.set(i, track);
+                ctx.getBot().getPlayerManager().loadItemOrdered(ctx.getEvent().getGuild(), track, new ResultHandler(ctx, true, false, true));
+            }
+        } catch (IOException e) {
+            ctx.getEvent().getChannel().sendMessage("Track not found.").queue();
+        }
+    }
+
+    private void playSpotifyTrack(String args, CommandContext ctx) {
+
+        MusicUtils mu = new MusicUtils(ctx.getBot());
+        try {
+            String search = "ytsearch:" + mu.getSpotifyTrackName(args);
+            ctx.getBot().getPlayerManager().loadItemOrdered(ctx.getEvent().getGuild(), search, new ResultHandler(ctx, true, false, false));
+        } catch (IOException e) {
+            ctx.getEvent().getChannel().sendMessage("Track not found.").queue();
         }
     }
 
@@ -102,16 +143,17 @@ public class PlayCmd extends MusicCommand implements ICommand {
     }
 
     private class ResultHandler implements AudioLoadResultHandler {
-        private final Message m;
         private final CommandContext ctx;
+        // If music is not found then search in youtube
         private final boolean ytsearch;
         private final boolean pplay;
+        private final boolean spotifyPlaylist;
 
-        private ResultHandler(Message m, CommandContext ctx, boolean ytsearch, boolean pplay) {
-            this.m = m;
+        private ResultHandler(CommandContext ctx, boolean ytsearch, boolean pplay, boolean spotifyPlaylist) {
             this.ctx = ctx;
             this.ytsearch = ytsearch;
             this.pplay = pplay;
+            this.spotifyPlaylist = spotifyPlaylist;
         }
 
         private void loadSingle(AudioTrack track, AudioPlaylist playlist) {
@@ -125,9 +167,12 @@ public class PlayCmd extends MusicCommand implements ICommand {
             int pos = handler.addTrack(new QueuedTrack(track, ctx.getEvent().getAuthor())) + 1;
             String addMsg = FormatUtil.filter("Added **" + track.getInfo().title
                     + "** (`" + FormatUtil.formatTime(track.getDuration()) + "`) " + (pos == 0 ? "to begin playing" : " to the queue at position " + pos));
-            if (playlist == null)
-                m.editMessage(new MusicUtils(ctx.getBot()).addMusicEmbed(track, m.getAuthor()).build()).queue();
-            else {
+
+            if (spotifyPlaylist) return;
+
+            if (playlist == null) {
+                ctx.getEvent().getChannel().sendMessage(new MusicUtils(ctx.getBot()).addMusicEmbed(track, ctx.getEvent().getAuthor()).build()).queue();
+            } else {
                 EmoteUtil eu = new EmoteUtil(ctx.getBot());
                 new ButtonMenu.Builder()
                         .setText(addMsg + "\n" + "This track has a playlist of **" +
@@ -138,16 +183,18 @@ public class PlayCmd extends MusicCommand implements ICommand {
                         .setTimeout(30, TimeUnit.SECONDS)
                         .setAction(re -> {
                             if (re.getName().equals("download"))
-                                m.editMessage(addMsg + "\n" + "Loaded **" + loadPlaylist(playlist, track) + "** additional tracks!").queue();
+                                ctx.getEvent().getChannel().sendMessage(addMsg + "\n" + "Loaded **" + loadPlaylist(playlist, track) + "** additional tracks!").queue();
                             else
-                                m.editMessage(addMsg).queue();
+                                ctx.getEvent().getChannel().sendMessage(addMsg).queue();
                         })
                         .setFinalAction(m -> {
                             try {
                                 m.clearReactions().queue();
                             } catch (PermissionException ignore) {
                             }
-                        }).build().display(m);
+                        })
+                        .build()
+                        .display(ctx.getEvent().getChannel());
             }
         }
 
@@ -166,13 +213,11 @@ public class PlayCmd extends MusicCommand implements ICommand {
 
         @Override
         public void trackLoaded(AudioTrack track) {
-            LOGGER.info("[PlayerManager] Track Loaded");
             loadSingle(track, null);
         }
 
         @Override
         public void playlistLoaded(AudioPlaylist playlist) {
-            LOGGER.info("[PlayerManager] Playlist Loaded");
             if (pplay) {
                 new MusicUtils(ctx.getBot()).addPlaylistEmbed(playlist, ctx.getEvent().getMessage());
                 loadPlaylist(playlist, null);
@@ -185,10 +230,10 @@ public class PlayCmd extends MusicCommand implements ICommand {
             } else {
                 int count = loadPlaylist(playlist, null);
                 if (count == 0) {
-                    m.editMessage(FormatUtil.filter("All entries in this playlist " + (playlist.getName() == null ? "" : "(**" + playlist.getName()
+                    ctx.getEvent().getChannel().sendMessage(FormatUtil.filter("All entries in this playlist " + (playlist.getName() == null ? "" : "(**" + playlist.getName()
                             + "**) ") + "were longer than the allowed maximum (`NaN`)")).queue();
                 } else {
-                    m.editMessage(FormatUtil.filter("Found "
+                    ctx.getEvent().getChannel().sendMessage(FormatUtil.filter("Found "
                             + (playlist.getName() == null ? "a playlist" : "playlist **" + playlist.getName() + "**") + " with `"
                             + playlist.getTracks().size() + "` entries; added to the queue!"
                             + (count < playlist.getTracks().size() ? "\n" + "Tracks longer than the allowed maximum (`"
@@ -199,23 +244,21 @@ public class PlayCmd extends MusicCommand implements ICommand {
 
         @Override
         public void noMatches() {
-            LOGGER.info("[PlayerManager] No Matches");
             if (ytsearch)
-                m.editMessage(FormatUtil.filter("No results found for `" + ctx.getArgs() + "`.")).queue();
+                ctx.getEvent().getChannel().sendMessage(FormatUtil.filter("No results found for `" + ctx.getArgs() + "`.")).queue();
             else
                 ctx.getBot().getPlayerManager().loadItemOrdered(
                         ctx.getEvent().getGuild(),
                         "ytsearch:" + ctx.getArgs(),
-                        new ResultHandler(m, ctx, true, false));
+                        new ResultHandler(ctx, true, false, false));
         }
 
         @Override
         public void loadFailed(FriendlyException throwable) {
-            LOGGER.info("[PlayerManager] Load Failed");
             if (throwable.severity == Severity.COMMON)
-                m.editMessage("Error loading: " + throwable.getMessage()).queue();
+                ctx.getEvent().getChannel().sendMessage("Error loading: " + throwable.getMessage()).queue();
             else
-                m.editMessage("Error loading track.").queue();
+                ctx.getEvent().getChannel().sendMessage("Error loading track.").queue();
         }
     }
 }
