@@ -69,7 +69,7 @@ public class CommandManager {
         commands.put("shuffle", new ShuffleCmd());
         commands.put("skip", new SkipCmd());
         commands.put("remove", new RemoveCmd());
-        commands.put("queue", new QueueCmd(bot));
+        commands.put("queue", new QueueCmd(bot, musicSettingsRepository));
         commands.put("pplaylist", new PlayPlaylistCmd());
         commands.put("playlists", new PlaylistsCmd());
         commands.put("search", new SearchCmd(bot));
@@ -82,7 +82,7 @@ public class CommandManager {
         commands.put("forceskip", new ForceskipCmd());
         commands.put("pause", new PauseCmd());
         commands.put("playnext", new PlaynextCmd());
-        commands.put("repeat", new RepeatCmd());
+        commands.put("repeat", new PlaylistRepeatCmd(musicSettingsRepository));
         commands.put("seek", new SeekCmd());
         commands.put("skipto", new SkiptoCmd());
         commands.put("volume", new VolumeCmd());
@@ -234,7 +234,7 @@ public class CommandManager {
     public String getMusicTextChannelId(Long serverId) {
         Optional<MusicSettingsEntity> settings = musicSettingsRepository.findById(serverId);
         if (settings.isPresent()) {
-            return settings.get().getMusicTextChannelId();
+            return settings.get().getTextChannelId();
         }
         return "";
     }
@@ -243,7 +243,7 @@ public class CommandManager {
     public String getMusicVoiceChannelId(Long serverId) {
         Optional<MusicSettingsEntity> settings = musicSettingsRepository.findById(serverId);
         if (settings.isPresent()) {
-            return settings.get().getMusicVoiceChannelId();
+            return settings.get().getVoiceChannelId();
         }
         return "";
     }
@@ -267,5 +267,9 @@ public class CommandManager {
 
     public GuildSettingsRepository getGuildSettingsReository() {
         return guildSettingsRepository;
+    }
+
+    public MusicSettingsRepository getMusicSettingsRepository() {
+        return musicSettingsRepository;
     }
 }

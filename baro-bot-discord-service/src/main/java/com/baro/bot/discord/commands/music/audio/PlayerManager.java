@@ -36,7 +36,7 @@ public class PlayerManager extends DefaultAudioPlayerManager {
         if (guild.getAudioManager().getSendingHandler() == null) {
             AudioPlayer player = createPlayer();
             player.setVolume(defaultVolume);
-            handler = new AudioHandler(this, guild, player);
+            handler = new AudioHandler(this, guild, player, bot.getListener().getManager().getMusicSettingsRepository());
             player.addListener(handler);
             guild.getAudioManager().setSendingHandler(handler);
         } else

@@ -16,9 +16,9 @@ public class MusicSettingsEntity {
     @Column(nullable = false)
     private String djRoleId;
     @Column(nullable = false)
-    private String musicTextChannelId;
+    private String textChannelId;
     @Column(nullable = false)
-    private String musicVoiceChannelId;
+    private String voiceChannelId;
     @Column(nullable = false)
     private boolean trackRepeat;
     @Column(nullable = false)
@@ -29,11 +29,11 @@ public class MusicSettingsEntity {
     public MusicSettingsEntity() {
     }
 
-    public MusicSettingsEntity(Long serverId, String djRoleId, String musicTextChannelId, String musicVoiceChannelId, String defaultPlaylist, boolean trackRepeat, boolean playlistRepeat) {
+    public MusicSettingsEntity(Long serverId, String djRoleId, String textChannelId, String voiceChannelId, String defaultPlaylist, boolean trackRepeat, boolean playlistRepeat) {
         this.serverId = serverId;
         this.djRoleId = djRoleId;
-        this.musicTextChannelId = musicTextChannelId;
-        this.musicVoiceChannelId = musicVoiceChannelId;
+        this.textChannelId = textChannelId;
+        this.voiceChannelId = voiceChannelId;
         this.defaultPlaylist = defaultPlaylist;
         this.trackRepeat = trackRepeat;
         this.playlistRepeat = playlistRepeat;
@@ -55,20 +55,20 @@ public class MusicSettingsEntity {
         this.djRoleId = djRoleId;
     }
 
-    public String getMusicTextChannelId() {
-        return musicTextChannelId;
+    public String getTextChannelId() {
+        return textChannelId;
     }
 
-    public void setMusicTextChannelId(String musicTextChannelId) {
-        this.musicTextChannelId = musicTextChannelId;
+    public void setTextChannelId(String textChannelId) {
+        this.textChannelId = textChannelId;
     }
 
-    public String getMusicVoiceChannelId() {
-        return musicVoiceChannelId;
+    public String getVoiceChannelId() {
+        return voiceChannelId;
     }
 
-    public void setMusicVoiceChannelId(String musicVoiceChannelId) {
-        this.musicVoiceChannelId = musicVoiceChannelId;
+    public void setVoiceChannelId(String voiceChannelId) {
+        this.voiceChannelId = voiceChannelId;
     }
 
     public String getDefaultPlaylist() {

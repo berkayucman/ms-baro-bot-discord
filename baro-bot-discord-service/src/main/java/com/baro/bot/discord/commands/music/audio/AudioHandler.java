@@ -1,8 +1,9 @@
 
 package com.baro.bot.discord.commands.music.audio;
 
-import com.baro.bot.discord.commands.music.QueueCmd;
 import com.baro.bot.discord.commands.music.queue.FairQueue;
+import com.baro.bot.discord.model.MusicSettingsEntity;
+import com.baro.bot.discord.repository.MusicSettingsRepository;
 import com.baro.bot.discord.service.BaroBot;
 import com.baro.bot.discord.util.*;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -19,14 +20,11 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 
 import java.io.IOException;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class AudioHandler extends AudioEventAdapter implements AudioSendHandler {
+
     public final String PLAY_EMOJI = "\u25B6"; // ▶
     public final String PAUSE_EMOJI = "\u23F8"; // ⏸
     public final String STOP_EMOJI = "\u23F9"; // ⏹
@@ -40,14 +38,17 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     private final MutableAudioFrame frame;
     private final boolean isAutoLeave = true;
 
+    private final MusicSettingsRepository musicSettingsRepository;
 
-    protected AudioHandler(PlayerManager manager, Guild guild, AudioPlayer player) {
+
+    protected AudioHandler(PlayerManager manager, Guild guild, AudioPlayer player, MusicSettingsRepository musicSettingsRepository) {
         this.manager = manager;
         this.buffer = ByteBuffer.allocate(1024);
         this.frame = new MutableAudioFrame();
         this.frame.setBuffer(buffer);
         this.audioPlayer = player;
         this.guildId = guild.getIdLong();
+        this.musicSettingsRepository = musicSettingsRepository;
     }
 
     public int addTrackToFront(QueuedTrack qtrack) {
@@ -101,8 +102,11 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         // if the track ended normally, and we're in repeat mode, re-add it to the queue
-        if (endReason == AudioTrackEndReason.FINISHED && QueueCmd.repeatMode)
+        Optional<MusicSettingsEntity> musicSettingsEntity = musicSettingsRepository.findById(guildId);
+        boolean repeat = musicSettingsEntity.isPresent() && musicSettingsEntity.get().isPlaylistRepeat();
+        if (endReason == AudioTrackEndReason.FINISHED && repeat) {
             queue.add(new QueuedTrack(track.makeClone(), track.getUserData(Long.class) == null ? 0L : track.getUserData(Long.class)));
+        }
 
         if (queue.isEmpty()) {
             manager.getBot().getNowplayingHandler().onTrackUpdate(guildId, null, this);
@@ -229,7 +233,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     @Override
     public ByteBuffer provide20MsAudio() {
         // flip to make it a read buffer
-        ((Buffer) buffer).flip();
+        buffer.flip();
         return buffer;
     }
 

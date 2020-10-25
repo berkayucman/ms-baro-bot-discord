@@ -14,15 +14,25 @@ public interface MusicSettingsRepository extends JpaRepository<MusicSettingsEnti
     @Transactional
     @Modifying
     @Query("UPDATE music_settings SET dj_role_id = :dj_role_id WHERE server_id = :server_id")
-    int setMusicDjRoleId(@Param("dj_role_id") String dj_role_id, @Param("server_id") Long server_id);
+    int setDjRoleId(@Param("dj_role_id") String dj_role_id, @Param("server_id") Long server_id);
 
     @Transactional
     @Modifying
-    @Query("UPDATE music_settings SET music_text_channel_id = :music_text_channel_id WHERE server_id = :server_id")
-    int setMusicTextChannelId(@Param("music_text_channel_id") String music_channel_id, @Param("server_id") Long server_id);
+    @Query("UPDATE music_settings SET text_channel_id = :text_channel_id WHERE server_id = :server_id")
+    int setTextChannelId(@Param("text_channel_id") String music_channel_id, @Param("server_id") Long server_id);
 
     @Transactional
     @Modifying
-    @Query("UPDATE music_settings SET music_voice_channel_id = :music_voice_channel_id WHERE server_id = :server_id")
-    int setMusicVoiceChannelId(@Param("music_voice_channel_id") String music_voice_channel_id, @Param("server_id") Long server_id);
+    @Query("UPDATE music_settings SET voice_channel_id = :voice_channel_id WHERE server_id = :server_id")
+    int setVoiceChannelId(@Param("voice_channel_id") String voice_channel_id, @Param("server_id") Long server_id);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE music_settings SET playlist_repeat = :playlist_repeat WHERE server_id = :server_id")
+    int setPlaylistRepeat(@Param("playlist_repeat") boolean playlist_repeat, @Param("server_id") Long server_id);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE music_settings SET track_repeat = :track_repeat WHERE server_id = :server_id")
+    int setTracktRepeat(@Param("track_repeat") boolean track_repeat, @Param("server_id") Long server_id);
 }

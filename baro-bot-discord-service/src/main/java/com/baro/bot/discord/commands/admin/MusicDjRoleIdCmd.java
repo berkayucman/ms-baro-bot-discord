@@ -27,7 +27,7 @@ public class MusicDjRoleIdCmd extends ACommand implements ICommand {
     public void execute(CommandContext ctx) {
         Long guildId = ctx.getEvent().getGuild().getIdLong();
         if (ctx.getArgs().isEmpty()) {
-            musicSettingsRepository.setMusicDjRoleId("", guildId);
+            musicSettingsRepository.setDjRoleId("", guildId);
             sendSuccess(ctx, "DJ role cleared; Only Admins can use the DJ commands.");
 
             return;
@@ -38,7 +38,7 @@ public class MusicDjRoleIdCmd extends ACommand implements ICommand {
         } else if (list.size() > 1) {
             sendWarning(ctx, FormatUtil.listOfRoles(list, ctx.getArgs()));
         } else {
-            musicSettingsRepository.setMusicDjRoleId(list.get(0).getId(), guildId);
+            musicSettingsRepository.setDjRoleId(list.get(0).getId(), guildId);
             sendSuccess(ctx, " DJ commands can now be used by users with the **" + list.get(0).getName() + "** role.");
         }
     }

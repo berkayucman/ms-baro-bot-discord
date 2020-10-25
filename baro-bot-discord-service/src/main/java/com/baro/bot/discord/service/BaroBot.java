@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 @Service
 public class BaroBot {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(BaroBot.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaroBot.class);
     private final BotConfig botConfig;
     private final PlayerManager playerManager;
     private final NowplayingHandler nowplayingHandler;
