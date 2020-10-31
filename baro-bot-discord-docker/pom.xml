@@ -38,7 +38,7 @@
                         <configuration>
                             <images>
                                 <image>
-                                    <name>${docker.repo}/barodev/baro-bot-discord:${project.version}</name>
+                                    <name>${docker.repo}/baro-bot-discord:${project.version}</name>
                                     <build>
                                         <optimise>true</optimise>
                                         <from>${docker.container.parent}</from>
