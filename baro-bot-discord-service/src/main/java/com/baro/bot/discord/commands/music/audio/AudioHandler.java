@@ -23,11 +23,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
+import static com.baro.bot.discord.util.Statics.*;
+
 public class AudioHandler extends AudioEventAdapter implements AudioSendHandler {
 
-    public final String PLAY_EMOJI = "\u25B6"; // ▶
-    public final String PAUSE_EMOJI = "\u23F8"; // ⏸
-    public final String STOP_EMOJI = "\u23F9"; // ⏹
     private final FairQueue<QueuedTrack> queue = new FairQueue<>();
     private final List<AudioTrack> defaultQueue = new LinkedList<>();
     private final Set<String> votes = new HashSet<>();

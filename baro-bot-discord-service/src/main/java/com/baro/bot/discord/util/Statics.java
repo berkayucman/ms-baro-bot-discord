@@ -3,7 +3,7 @@ package com.baro.bot.discord.util;
 public class Statics {
 
     //////////////////////////////////////   GUILDS   //////////////////////////////////////
-    public static final String GUILD_PALADIN_ID = "393207704211947521";
+    public static final String EMOTE_GUILD_ID = "393207704211947521";
 
     //////////////////////////////////////   IMAGES   //////////////////////////////////////
     public static final String IMAGE_YOUTUBE_GIF = "https://cdn.discordapp.com/attachments/396964573007052800/443750201195364362/YouTube.gif";
@@ -20,6 +20,10 @@ public class Statics {
 
 
     //////////////////////////////////////   EMOJIS   //////////////////////////////////////
+    public static final String PLAY_EMOJI = "\u25B6"; // ▶
+    public static final String PAUSE_EMOJI = "\u23F8";  // ⏸
+    public static final String STOP_EMOJI = "\u23F9";  // ⏹
+    public static final String REPEAT = "\uD83D\uDD01"; // 🔁
     public static final String EMOJI_A = "\uD83C\uDDE6";
     public static final String EMOJI_V = "\uD83C\uDDFB";
     public static final String EMOJI_C = "\uD83C\uDDE8";

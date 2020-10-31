@@ -6,6 +6,7 @@
         <artifactId>ms-baro-bot-discord</artifactId>
         <groupId>com.baro.bot.discord</groupId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -24,7 +25,7 @@
             <dependencies>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
-                    <artifactId>baro-bot-discord-docker</artifactId>
+                    <artifactId>baro-bot-discord-service</artifactId>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
@@ -37,7 +38,7 @@
                         <configuration>
                             <images>
                                 <image>
-                                    <name>${docker.repo}/project-baro-bot/discord:${project.version}</name>
+                                    <name>${docker.repo}/barodev/baro-bot-discord:${project.version}</name>
                                     <build>
                                         <optimise>true</optimise>
                                         <from>${docker.container.parent}</from>

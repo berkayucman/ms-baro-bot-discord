@@ -23,13 +23,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import static com.baro.bot.discord.util.Statics.*;
+
 public class QueueCmd extends MusicCommand implements ICommand {
 
     // TODO: USE THOSE AS PROPERTIES
-    public final String PLAY_EMOJI = "\u25B6"; // ▶
-    public final String PAUSE_EMOJI = "\u23F8"; // ⏸
-    public final String STOP_EMOJI = "\u23F9"; // ⏹
-    private final String REPEAT = "\uD83D\uDD01"; // 🔁
+    public final String STOP_EMOJI = "\u23F9";
     private final Paginator.Builder builder;
     private final MusicSettingsRepository musicSettingsRepository;
 

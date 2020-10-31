@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.events.channel.category.CategoryCreateEvent;
 import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdateNameEvent;
-import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePositionEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
@@ -228,9 +227,6 @@ public class Listener extends ListenerAdapter {
     }
 
     public void onCategoryUpdatePosition(@Nonnull CategoryUpdatePositionEvent event) {
-    }
-
-    public void onCategoryUpdatePermissions(@Nonnull CategoryUpdatePermissionsEvent event) {
     }
 
     public void onCategoryCreate(@Nonnull CategoryCreateEvent event) {

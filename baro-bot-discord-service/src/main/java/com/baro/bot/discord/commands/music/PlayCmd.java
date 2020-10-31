@@ -16,8 +16,6 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.exceptions.PermissionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,8 +23,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class PlayCmd extends MusicCommand implements ICommand {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PlayCmd.class);
 
     @Override
     public void execute(CommandContext ctx) {
@@ -157,11 +153,6 @@ public class PlayCmd extends MusicCommand implements ICommand {
         }
 
         private void loadSingle(AudioTrack track, AudioPlaylist playlist) {
-//            if (bot.getConfig().isTooLong(track)) {
-//                m.editMessage(FormatUtil.filter(event.getClient().getWarning() + " This track (**" + track.getInfo().title + "**) is longer than the allowed maximum: `"
-//                        + FormatUtil.formatTime(track.getDuration()) + "` > `" + FormatUtil.formatTime(bot.getConfig().getMaxSeconds() * 1000) + "`")).queue();
-//                return;
-//            }
             AudioHandler handler = (AudioHandler) ctx.getEvent().getGuild().getAudioManager().getSendingHandler();
 
             int pos = handler.addTrack(new QueuedTrack(track, ctx.getEvent().getAuthor())) + 1;
@@ -201,7 +192,6 @@ public class PlayCmd extends MusicCommand implements ICommand {
         private int loadPlaylist(AudioPlaylist playlist, AudioTrack exclude) {
             int[] count = {0};
             playlist.getTracks().stream().forEach((track) -> {
-//                if (!bot.getConfig().isTooLong(track) && !track.equals(exclude)) {
                 if (!track.equals(exclude)) {
                     AudioHandler handler = (AudioHandler) ctx.getEvent().getGuild().getAudioManager().getSendingHandler();
                     handler.addTrack(new QueuedTrack(track, ctx.getEvent().getAuthor()));
