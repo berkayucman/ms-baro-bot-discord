@@ -52,8 +52,9 @@ public abstract class MusicCommand extends ACommand {
 
     private boolean validVoiceState(CommandContext ctx) {
         VoiceChannel current = ctx.getEvent().getGuild().getSelfMember().getVoiceState().getChannel();
-        if (current == null) {
-            current = ctx.getEvent().getGuild().getVoiceChannelById(ctx.getCommandManager().getMusicVoiceChannelId(ctx.getEvent().getGuild().getIdLong()));
+        String guildVoiceChannelId =  ctx.getCommandManager().getMusicVoiceChannelId(ctx.getEvent().getGuild().getIdLong());
+        if (current == null && guildVoiceChannelId != null) {
+            current = ctx.getEvent().getGuild().getVoiceChannelById(guildVoiceChannelId);
         }
         GuildVoiceState userState = ctx.getEvent().getMember().getVoiceState();
         if (!userState.inVoiceChannel() || userState.isDeafened() || (current != null && !userState.getChannel().equals(current))) {
@@ -83,7 +84,7 @@ public abstract class MusicCommand extends ACommand {
 
     private boolean isMusicTextChannel(CommandContext ctx) {
         String musicChannelId = ctx.getCommandManager().getMusicTextChannelId(ctx.getEvent().getGuild().getIdLong());
-        if (musicChannelId.equals(ctx.getEvent().getChannel().getId()) || musicChannelId.isEmpty()) return true;
+        if (musicChannelId == null || musicChannelId.equals(ctx.getEvent().getChannel().getId())) return true;
         TextChannel musicTextChannel = ctx.getEvent().getGuild().getTextChannelById(musicChannelId);
         sendError(ctx, "You can only use that command in" + musicTextChannel.getAsMention() + "!");
         return false;

@@ -234,28 +234,19 @@ public class CommandManager {
     @NotNull
     public String getMusicTextChannelId(Long serverId) {
         Optional<MusicSettingsEntity> settings = musicSettingsRepository.findById(serverId);
-        if (settings.isPresent()) {
-            return settings.get().getTextChannelId();
-        }
-        return "";
+        return settings.map(MusicSettingsEntity::getTextChannelId).orElse(null);
     }
 
     @NotNull
     public String getMusicVoiceChannelId(Long serverId) {
         Optional<MusicSettingsEntity> settings = musicSettingsRepository.findById(serverId);
-        if (settings.isPresent()) {
-            return settings.get().getVoiceChannelId();
-        }
-        return "";
+        return settings.map(MusicSettingsEntity::getVoiceChannelId).orElse(null);
     }
 
     @NotNull
     public String getDjRoleId(Long serverId) {
         Optional<MusicSettingsEntity> settings = musicSettingsRepository.findById(serverId);
-        if (settings.isPresent()) {
-            return settings.get().getDjRoleId();
-        }
-        return "";
+        return settings.map(MusicSettingsEntity::getDjRoleId).orElse(null);
     }
 
     public Map<String, ICommand> getCommands() {
