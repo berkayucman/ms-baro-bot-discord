@@ -27,7 +27,7 @@ public class MusicVoiceChannelIdCmd extends ACommand implements ICommand {
     public void execute(CommandContext ctx) {
         Long guildId = ctx.getEvent().getGuild().getIdLong();
         if (ctx.getArgs().isEmpty()) {
-            musicSettingsRepository.setMusicVoiceChannelId("", guildId);
+            musicSettingsRepository.setVoiceChannelId("", guildId);
             sendSuccess(ctx, "Music can now be played in any channel");
 
             return;
@@ -38,7 +38,7 @@ public class MusicVoiceChannelIdCmd extends ACommand implements ICommand {
         } else if (list.size() > 1) {
             ctx.getEvent().getChannel().sendMessage(FormatUtil.listOfVChannels(list, ctx.getArgs())).queue();
         } else {
-            musicSettingsRepository.setMusicVoiceChannelId(list.get(0).getId(), guildId);
+            musicSettingsRepository.setVoiceChannelId(list.get(0).getId(), guildId);
             sendSuccess(ctx, "Music can now only be played in **" + list.get(0).getName() + "**");
         }
     }

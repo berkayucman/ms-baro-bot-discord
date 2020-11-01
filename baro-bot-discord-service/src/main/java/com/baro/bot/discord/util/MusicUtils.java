@@ -11,6 +11,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import okhttp3.*;
@@ -37,6 +38,34 @@ public class MusicUtils {
 
     public MusicUtils(BaroBot bot) {
         this.bot = bot;
+    }
+
+    public void spotifyPlaylistAddEmbed(List<String> tracks, User user, TextChannel channel) {
+        int page = 1;
+        Paginator.Builder pbuilder = new Paginator.Builder().setColumns(1)
+                .setItemsPerPage(15)
+                .showPageNumbers(true)
+                .waitOnSinglePage(false)
+                .useNumberedItems(true)
+                .setFinalAction(m -> {
+                    try {
+                        m.clearReactions().queue();
+                    } catch (PermissionException ex) {
+                        m.delete().queue();
+                    }
+                })
+                .setEventWaiter(bot.getEventWaiter())
+                .setTimeout(1, TimeUnit.MINUTES);
+
+        pbuilder.clearItems();
+        tracks.stream()
+                .map(this::titleShortner)
+                .forEach(pbuilder::addItems);
+        ColorUtil colorUtil = new ColorUtil();
+        Paginator p = pbuilder.setColor(colorUtil.getRandomColor())
+                .setText("[DJ] " + user.getName() + " - Added " + tracks.size() + " tracks to queue")
+                .build();
+        p.paginate(channel, page);
     }
 
     public void addPlaylistEmbed(AudioPlaylist playlist, Message message) {

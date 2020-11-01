@@ -6,6 +6,8 @@ import com.baro.bot.discord.commands.ICommand;
 import com.baro.bot.discord.commands.MusicCommand;
 import com.baro.bot.discord.commands.music.audio.AudioHandler;
 import com.baro.bot.discord.commands.music.audio.QueuedTrack;
+import com.baro.bot.discord.model.MusicSettingsEntity;
+import com.baro.bot.discord.repository.MusicSettingsRepository;
 import com.baro.bot.discord.service.BaroBot;
 import com.baro.bot.discord.util.FormatUtil;
 import com.jagrosh.jdautilities.menu.Paginator;
@@ -18,19 +20,20 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+
+import static com.baro.bot.discord.util.Statics.*;
 
 public class QueueCmd extends MusicCommand implements ICommand {
 
-    public static boolean repeatMode = false;
-    public final String PLAY_EMOJI = "\u25B6"; // ▶
-    public final String PAUSE_EMOJI = "\u23F8"; // ⏸
-    public final String STOP_EMOJI = "\u23F9"; // ⏹
-    private final String REPEAT = "\uD83D\uDD01"; // 🔁
+    // TODO: USE THOSE AS PROPERTIES
+    public final String STOP_EMOJI = "\u23F9";
     private final Paginator.Builder builder;
+    private final MusicSettingsRepository musicSettingsRepository;
 
-
-    public QueueCmd(BaroBot bot) {
+    public QueueCmd(BaroBot bot, MusicSettingsRepository musicSettingsRepository) {
+        this.musicSettingsRepository = musicSettingsRepository;
         this.builder = new Paginator.Builder()
                 .setColumns(1)
                 .setFinalAction(m -> {
@@ -48,15 +51,17 @@ public class QueueCmd extends MusicCommand implements ICommand {
                 .setTimeout(1, TimeUnit.MINUTES);
     }
 
-    private String getQueueTitle(AudioHandler ah, int songslength, long total) {
+    private String getQueueTitle(AudioHandler ah, int songslength, long total, long guildId) {
         StringBuilder sb = new StringBuilder();
         if (ah.getPlayer().getPlayingTrack() != null) {
             sb.append(ah.getPlayer().isPaused() ? PAUSE_EMOJI : PLAY_EMOJI).append(" **")
                     .append(ah.getPlayer().getPlayingTrack().getInfo().title).append("**\n");
         }
+        Optional<MusicSettingsEntity> musicSettingsEntity = musicSettingsRepository.findById(guildId);
+        boolean repeat = musicSettingsEntity.isPresent() && musicSettingsEntity.get().isPlaylistRepeat();
         return FormatUtil.filter(sb.append(" Current Queue | ").append(songslength)
                 .append(" entries | `").append(FormatUtil.formatTime(total)).append("` ")
-                .append(repeatMode ? "| " + REPEAT : "").toString());
+                .append(repeat ? "| " + REPEAT : "").toString());
     }
 
     @Override
@@ -89,7 +94,7 @@ public class QueueCmd extends MusicCommand implements ICommand {
             songs[i] = list.get(i).toString();
         }
         long fintotal = total;
-        builder.setText((i1, i2) -> getQueueTitle(ah, songs.length, fintotal))
+        builder.setText((i1, i2) -> getQueueTitle(ah, songs.length, fintotal, ctx.getEvent().getGuild().getIdLong()))
                 .setItems(songs)
                 .setUsers(ctx.getEvent().getAuthor())
                 .setColor(ctx.getEvent().getGuild().getSelfMember().getColor())

@@ -32,3 +32,7 @@ hs_err_pid*
 
 # Database
 *.db
+
+# Environment
+/.env
+baro-bot-discord-service/src/main/resources/application.properties

@@ -12,7 +12,8 @@ import java.util.List;
 
 public class SkiptoCmd extends MusicCommand implements ICommand {
 
-    // args: position
+    // TODO: if playlist repeat is enabled then add all tracks back to queue
+    // TODO: is track playlist is enabled then add it back to queue
     @Override
     public void execute(CommandContext ctx) {
         if (!init(ctx)) return;

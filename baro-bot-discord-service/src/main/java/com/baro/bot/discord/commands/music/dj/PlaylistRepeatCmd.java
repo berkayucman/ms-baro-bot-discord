@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class RepeatCmd extends MusicCommand implements ICommand {
+public class PlaylistRepeatCmd extends MusicCommand implements ICommand {
 
     private final MusicSettingsRepository musicSettingsRepository;
 
-    public RepeatCmd(MusicSettingsRepository musicSettingsRepository) {
+    public PlaylistRepeatCmd(MusicSettingsRepository musicSettingsRepository) {
         this.musicSettingsRepository = musicSettingsRepository;
     }
 
@@ -28,7 +28,7 @@ public class RepeatCmd extends MusicCommand implements ICommand {
         Optional<MusicSettingsEntity> settings = musicSettingsRepository.findById(ctx.getEvent().getGuild().getIdLong());
         boolean value;
         if (ctx.getArgs().isEmpty()) {
-            value = settings.isPresent() && !settings.get().isTrackRepeat();
+            value = settings.isPresent() && !settings.get().isPlaylistRepeat();
         } else if (ctx.getArgs().equalsIgnoreCase("true") || ctx.getArgs().equalsIgnoreCase("on")) {
             value = true;
         } else if (ctx.getArgs().equalsIgnoreCase("false") || ctx.getArgs().equalsIgnoreCase("off")) {
@@ -37,13 +37,13 @@ public class RepeatCmd extends MusicCommand implements ICommand {
             ctx.getEvent().getChannel().sendMessage("Valid options are `on` or `off` (or leave empty to toggle)").queue();
             return;
         }
-        musicSettingsRepository.setTracktRepeat(value, guildId);
+        musicSettingsRepository.setPlaylistRepeat(value, guildId);
         ctx.getEvent().getChannel().sendMessage("Repeat mode is now `" + (value ? "ON" : "OFF") + "`").queue();
     }
 
     @Override
     public String getName() {
-        return "repeat";
+        return "prepeat";
     }
 
     @Override
@@ -59,7 +59,7 @@ public class RepeatCmd extends MusicCommand implements ICommand {
     @Override
     public List<String> getExamples() {
         List<String> samples = new ArrayList<>();
-        samples.add("`repeat ON|OFF` - Puts the player in (or takes it out of) repeat mode. In repeat mode, when songs end naturally (not removed or skipped), they get put back into the queue.");
+        samples.add("`prepeat ON|OFF` - Puts the player in (or takes it out of) repeat mode. In repeat mode, when songs end naturally (not removed or skipped), they get put back into the queue.");
         return samples;
     }
 }
