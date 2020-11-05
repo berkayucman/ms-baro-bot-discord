@@ -8,6 +8,7 @@ import com.baro.bot.discord.components.Listener;
 import com.baro.bot.discord.config.BotConfig;
 import com.baro.bot.discord.util.ConsoleColors;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -29,8 +30,8 @@ public class BaroBot {
     private final NowplayingHandler nowplayingHandler;
     private final PlaylistLoader playlistLoader;
     private JDA jda;
-    private EventWaiter eventWaiter;
-    private Listener listener;
+    private final EventWaiter eventWaiter;
+    private final Listener listener;
     private boolean shuttingDown = false;
 
     public BaroBot(BotConfig botConfig, Listener listener) {
@@ -49,6 +50,7 @@ public class BaroBot {
 
         JDABuilder builder = JDABuilder.createDefault(botConfig.getToken())
                 .setBulkDeleteSplittingEnabled(true)
+                .setAudioSendFactory(new NativeAudioSendFactory())
                 .addEventListeners(eventWaiter, listener);
         if (!botConfig.getActivity().isEmpty()) {
             builder.setActivity(Activity.watching(botConfig.getActivity()));

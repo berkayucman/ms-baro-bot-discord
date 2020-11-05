@@ -44,8 +44,12 @@
             <artifactId>JDA</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.Devoxin</groupId>
+            <groupId>com.sedmelluq</groupId>
             <artifactId>lavaplayer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sedmelluq</groupId>
+            <artifactId>jda-nas</artifactId>
         </dependency>
         <dependency>
             <groupId>com.jagrosh</groupId>
