@@ -4,8 +4,8 @@ import com.baro.bot.discord.commands.CommandCategory;
 import com.baro.bot.discord.commands.CommandContext;
 import com.baro.bot.discord.commands.ICommand;
 import com.baro.bot.discord.commands.MusicCommand;
-import com.baro.bot.discord.model.MusicSettingsEntity;
-import com.baro.bot.discord.repository.MusicSettingsRepository;
+import com.baro.bot.discord.model.MusicEntity;
+import com.baro.bot.discord.repository.MusicRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +13,10 @@ import java.util.Optional;
 
 public class RepeatCmd extends MusicCommand implements ICommand {
 
-    private final MusicSettingsRepository musicSettingsRepository;
+    private final MusicRepository musicRepository;
 
-    public RepeatCmd(MusicSettingsRepository musicSettingsRepository) {
-        this.musicSettingsRepository = musicSettingsRepository;
+    public RepeatCmd(MusicRepository musicRepository) {
+        this.musicRepository = musicRepository;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class RepeatCmd extends MusicCommand implements ICommand {
         if (!init(ctx)) return;
 
         long guildId = ctx.getEvent().getGuild().getIdLong();
-        Optional<MusicSettingsEntity> settings = musicSettingsRepository.findById(ctx.getEvent().getGuild().getIdLong());
+        Optional<MusicEntity> settings = musicRepository.findById(ctx.getEvent().getGuild().getIdLong());
         boolean value;
         if (ctx.getArgs().isEmpty()) {
             value = settings.isPresent() && !settings.get().isTrackRepeat();
@@ -37,7 +37,7 @@ public class RepeatCmd extends MusicCommand implements ICommand {
             ctx.getEvent().getChannel().sendMessage("Valid options are `on` or `off` (or leave empty to toggle)").queue();
             return;
         }
-        musicSettingsRepository.setTracktRepeat(value, guildId);
+        musicRepository.setTracktRepeat(value, guildId);
         ctx.getEvent().getChannel().sendMessage("Repeat mode is now `" + (value ? "ON" : "OFF") + "`").queue();
     }
 

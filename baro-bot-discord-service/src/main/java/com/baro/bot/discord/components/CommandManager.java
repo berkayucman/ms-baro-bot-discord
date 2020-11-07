@@ -13,10 +13,10 @@ import com.baro.bot.discord.commands.music.dj.*;
 import com.baro.bot.discord.commands.owner.*;
 import com.baro.bot.discord.config.BotConfig;
 import com.baro.bot.discord.config.FlagsConfig;
-import com.baro.bot.discord.model.GuildSettingsEntity;
-import com.baro.bot.discord.model.MusicSettingsEntity;
-import com.baro.bot.discord.repository.GuildSettingsRepository;
-import com.baro.bot.discord.repository.MusicSettingsRepository;
+import com.baro.bot.discord.model.GuildEntity;
+import com.baro.bot.discord.model.MusicEntity;
+import com.baro.bot.discord.repository.GuildRepository;
+import com.baro.bot.discord.repository.MusicRepository;
 import com.baro.bot.discord.service.BaroBot;
 import com.sun.istack.NotNull;
 import net.dv8tion.jda.api.Permission;
@@ -41,22 +41,22 @@ public class CommandManager {
     private final BaroBot bot;
     private final BotConfig botConfig;
     private final FlagsConfig flagsConfig;
-    private final GuildSettingsRepository guildSettingsRepository;
-    private final MusicSettingsRepository musicSettingsRepository;
+    private final GuildRepository guildRepository;
+    private final MusicRepository musicRepository;
 
-    public CommandManager(BaroBot bot, BotConfig botConfig, FlagsConfig flagsConfig, GuildSettingsRepository guildSettingsRepository, MusicSettingsRepository musicSettingsRepository) {
+    public CommandManager(BaroBot bot, BotConfig botConfig, FlagsConfig flagsConfig, GuildRepository guildRepository, MusicRepository musicRepository) {
         this.bot = bot;
         this.botConfig = botConfig;
         this.flagsConfig = flagsConfig;
-        this.guildSettingsRepository = guildSettingsRepository;
-        this.musicSettingsRepository = musicSettingsRepository;
+        this.guildRepository = guildRepository;
+        this.musicRepository = musicRepository;
         this.commands = new HashMap();
 
         //ADMIN
-        commands.put("prefix", new PrefixCmd(guildSettingsRepository, botConfig));
-        commands.put("setdj", new MusicDjRoleIdCmd(musicSettingsRepository));
-        commands.put("settc", new MusicTextChannelIdCmd(musicSettingsRepository));
-        commands.put("setvc", new MusicVoiceChannelIdCmd(musicSettingsRepository));
+        commands.put("prefix", new PrefixCmd(guildRepository, botConfig));
+        commands.put("setdj", new MusicDjRoleIdCmd(musicRepository));
+        commands.put("settc", new MusicTextChannelIdCmd(musicRepository));
+        commands.put("setvc", new MusicVoiceChannelIdCmd(musicRepository));
         commands.put("ticket", new TicketCmd(flagsConfig));
 
         // INFORMATION
@@ -69,7 +69,7 @@ public class CommandManager {
         commands.put("shuffle", new ShuffleCmd());
         commands.put("skip", new SkipCmd());
         commands.put("remove", new RemoveCmd());
-        commands.put("queue", new QueueCmd(bot, musicSettingsRepository));
+        commands.put("queue", new QueueCmd(bot, musicRepository));
         commands.put("pplaylist", new PlayPlaylistCmd());
         commands.put("playlists", new PlaylistsCmd());
         commands.put("search", new SearchCmd(bot));
@@ -82,8 +82,8 @@ public class CommandManager {
         commands.put("forceskip", new ForceskipCmd());
         commands.put("pause", new PauseCmd());
         commands.put("playnext", new PlaynextCmd());
-        commands.put("prepeat", new PlaylistRepeatCmd(musicSettingsRepository));
-        commands.put("repeat", new RepeatCmd(musicSettingsRepository));
+        commands.put("prepeat", new PlaylistRepeatCmd(musicRepository));
+        commands.put("repeat", new RepeatCmd(musicRepository));
         commands.put("seek", new SeekCmd());
         commands.put("skipto", new SkiptoCmd());
         commands.put("volume", new VolumeCmd());
@@ -181,13 +181,9 @@ public class CommandManager {
 
         if (neededPerms == null) return true;
 
-        if (memberPermissions.contains(Permission.ADMINISTRATOR) ||
+        return memberPermissions.contains(Permission.ADMINISTRATOR) ||
                 memberPermissions.containsAll(neededPerms) ||
-                botConfig.getBotOwnerIds().contains(ctx.getEvent().getAuthor().getId())
-        )
-            return true;
-
-        return false;
+                botConfig.getBotOwnerIds().contains(ctx.getEvent().getAuthor().getId());
     }
 
     private boolean hasAllBotPermissions(CommandContext ctx, ICommand cmd) {
@@ -202,10 +198,7 @@ public class CommandManager {
             return true;
         }
 
-        if (botPermissions.containsAll(neededPermissions)) {
-            return true;
-        }
-        return false;
+        return botPermissions.containsAll(neededPermissions);
     }
 
     private boolean argsProvided(CommandContext ctx, ICommand cmd) {
@@ -224,7 +217,7 @@ public class CommandManager {
 
     @NotNull
     public String getPrefix(Long serverId) {
-        Optional<GuildSettingsEntity> settings = guildSettingsRepository.findById(serverId);
+        Optional<GuildEntity> settings = guildRepository.findById(serverId);
         if (settings.isPresent()) {
             return settings.get().getPrefix();
         }
@@ -233,20 +226,20 @@ public class CommandManager {
 
     @NotNull
     public String getMusicTextChannelId(Long serverId) {
-        Optional<MusicSettingsEntity> settings = musicSettingsRepository.findById(serverId);
-        return settings.map(MusicSettingsEntity::getTextChannelId).orElse(null);
+        Optional<MusicEntity> settings = musicRepository.findById(serverId);
+        return settings.map(MusicEntity::getTextChannelId).orElse(null);
     }
 
     @NotNull
     public String getMusicVoiceChannelId(Long serverId) {
-        Optional<MusicSettingsEntity> settings = musicSettingsRepository.findById(serverId);
-        return settings.map(MusicSettingsEntity::getVoiceChannelId).orElse(null);
+        Optional<MusicEntity> settings = musicRepository.findById(serverId);
+        return settings.map(MusicEntity::getVoiceChannelId).orElse(null);
     }
 
     @NotNull
     public String getDjRoleId(Long serverId) {
-        Optional<MusicSettingsEntity> settings = musicSettingsRepository.findById(serverId);
-        return settings.map(MusicSettingsEntity::getDjRoleId).orElse(null);
+        Optional<MusicEntity> settings = musicRepository.findById(serverId);
+        return settings.map(MusicEntity::getDjRoleId).orElse(null);
     }
 
     public Map<String, ICommand> getCommands() {
@@ -257,11 +250,11 @@ public class CommandManager {
         return botConfig;
     }
 
-    public GuildSettingsRepository getGuildSettingsReository() {
-        return guildSettingsRepository;
+    public GuildRepository getGuildSettingsReository() {
+        return guildRepository;
     }
 
-    public MusicSettingsRepository getMusicSettingsRepository() {
-        return musicSettingsRepository;
+    public MusicRepository getMusicSettingsRepository() {
+        return musicRepository;
     }
 }

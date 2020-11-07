@@ -6,8 +6,8 @@ import com.baro.bot.discord.commands.ICommand;
 import com.baro.bot.discord.commands.MusicCommand;
 import com.baro.bot.discord.commands.music.audio.AudioHandler;
 import com.baro.bot.discord.commands.music.audio.QueuedTrack;
-import com.baro.bot.discord.model.MusicSettingsEntity;
-import com.baro.bot.discord.repository.MusicSettingsRepository;
+import com.baro.bot.discord.model.MusicEntity;
+import com.baro.bot.discord.repository.MusicRepository;
 import com.baro.bot.discord.service.BaroBot;
 import com.baro.bot.discord.util.FormatUtil;
 import com.jagrosh.jdautilities.menu.Paginator;
@@ -30,10 +30,10 @@ public class QueueCmd extends MusicCommand implements ICommand {
     // TODO: USE THOSE AS PROPERTIES
     public final String STOP_EMOJI = "\u23F9";
     private final Paginator.Builder builder;
-    private final MusicSettingsRepository musicSettingsRepository;
+    private final MusicRepository musicRepository;
 
-    public QueueCmd(BaroBot bot, MusicSettingsRepository musicSettingsRepository) {
-        this.musicSettingsRepository = musicSettingsRepository;
+    public QueueCmd(BaroBot bot, MusicRepository musicRepository) {
+        this.musicRepository = musicRepository;
         this.builder = new Paginator.Builder()
                 .setColumns(1)
                 .setFinalAction(m -> {
@@ -57,7 +57,7 @@ public class QueueCmd extends MusicCommand implements ICommand {
             sb.append(ah.getPlayer().isPaused() ? PAUSE_EMOJI : PLAY_EMOJI).append(" **")
                     .append(ah.getPlayer().getPlayingTrack().getInfo().title).append("**\n");
         }
-        Optional<MusicSettingsEntity> musicSettingsEntity = musicSettingsRepository.findById(guildId);
+        Optional<MusicEntity> musicSettingsEntity = musicRepository.findById(guildId);
         boolean repeat = musicSettingsEntity.isPresent() && musicSettingsEntity.get().isPlaylistRepeat();
         return FormatUtil.filter(sb.append(" Current Queue | ").append(songslength)
                 .append(" entries | `").append(FormatUtil.formatTime(total)).append("` ")

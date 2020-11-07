@@ -2,8 +2,8 @@
 package com.baro.bot.discord.commands.music.audio;
 
 import com.baro.bot.discord.commands.music.queue.FairQueue;
-import com.baro.bot.discord.model.MusicSettingsEntity;
-import com.baro.bot.discord.repository.MusicSettingsRepository;
+import com.baro.bot.discord.model.MusicEntity;
+import com.baro.bot.discord.repository.MusicRepository;
 import com.baro.bot.discord.service.BaroBot;
 import com.baro.bot.discord.util.*;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -37,17 +37,17 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     private final MutableAudioFrame frame;
     private final boolean isAutoLeave = true;
 
-    private final MusicSettingsRepository musicSettingsRepository;
+    private final MusicRepository musicRepository;
 
 
-    protected AudioHandler(PlayerManager manager, Guild guild, AudioPlayer player, MusicSettingsRepository musicSettingsRepository) {
+    protected AudioHandler(PlayerManager manager, Guild guild, AudioPlayer player, MusicRepository musicRepository) {
         this.manager = manager;
         this.buffer = ByteBuffer.allocate(1024);
         this.frame = new MutableAudioFrame();
         this.frame.setBuffer(buffer);
         this.audioPlayer = player;
         this.guildId = guild.getIdLong();
-        this.musicSettingsRepository = musicSettingsRepository;
+        this.musicRepository = musicRepository;
     }
 
     public int addTrackToFront(QueuedTrack qtrack) {
@@ -101,7 +101,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         // if the track ended normally, and we're in repeat mode, re-add it to the queue
-        Optional<MusicSettingsEntity> musicSettingsEntity = musicSettingsRepository.findById(guildId);
+        Optional<MusicEntity> musicSettingsEntity = musicRepository.findById(guildId);
         boolean prepeat = musicSettingsEntity.isPresent() && musicSettingsEntity.get().isPlaylistRepeat();
         if (endReason == AudioTrackEndReason.FINISHED && prepeat) {
             queue.add(new QueuedTrack(track.makeClone(), track.getUserData(Long.class) == null ? 0L : track.getUserData(Long.class)));

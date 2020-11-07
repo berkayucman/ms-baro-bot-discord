@@ -4,7 +4,7 @@ import com.baro.bot.discord.commands.ACommand;
 import com.baro.bot.discord.commands.CommandCategory;
 import com.baro.bot.discord.commands.CommandContext;
 import com.baro.bot.discord.commands.ICommand;
-import com.baro.bot.discord.repository.MusicSettingsRepository;
+import com.baro.bot.discord.repository.MusicRepository;
 import com.baro.bot.discord.util.FormatUtil;
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import net.dv8tion.jda.api.Permission;
@@ -17,17 +17,17 @@ import java.util.List;
 
 public class MusicVoiceChannelIdCmd extends ACommand implements ICommand {
 
-    private final MusicSettingsRepository musicSettingsRepository;
+    private final MusicRepository musicRepository;
 
-    public MusicVoiceChannelIdCmd(MusicSettingsRepository musicSettingsRepository) {
-        this.musicSettingsRepository = musicSettingsRepository;
+    public MusicVoiceChannelIdCmd(MusicRepository musicRepository) {
+        this.musicRepository = musicRepository;
     }
 
     @Override
     public void execute(CommandContext ctx) {
         Long guildId = ctx.getEvent().getGuild().getIdLong();
         if (ctx.getArgs().isEmpty()) {
-            musicSettingsRepository.setVoiceChannelId("", guildId);
+            musicRepository.setVoiceChannelId("", guildId);
             sendSuccess(ctx, "Music can now be played in any channel");
 
             return;
@@ -38,7 +38,7 @@ public class MusicVoiceChannelIdCmd extends ACommand implements ICommand {
         } else if (list.size() > 1) {
             ctx.getEvent().getChannel().sendMessage(FormatUtil.listOfVChannels(list, ctx.getArgs())).queue();
         } else {
-            musicSettingsRepository.setVoiceChannelId(list.get(0).getId(), guildId);
+            musicRepository.setVoiceChannelId(list.get(0).getId(), guildId);
             sendSuccess(ctx, "Music can now only be played in **" + list.get(0).getName() + "**");
         }
     }

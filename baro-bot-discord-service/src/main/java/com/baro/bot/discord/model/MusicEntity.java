@@ -5,9 +5,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity(name = "music_settings")
-@Table(name = "music_settings")
-public class MusicSettingsEntity {
+@Entity(name = "music")
+@Table(name = "music")
+public class MusicEntity {
 
     @Id
     @Column(unique = true, nullable = false)
@@ -26,10 +26,10 @@ public class MusicSettingsEntity {
     @Column(nullable = false)
     private String defaultPlaylist;
 
-    public MusicSettingsEntity() {
+    public MusicEntity() {
     }
 
-    public MusicSettingsEntity(Long serverId, String djRoleId, String textChannelId, String voiceChannelId, String defaultPlaylist, boolean trackRepeat, boolean playlistRepeat) {
+    public MusicEntity(Long serverId, String djRoleId, String textChannelId, String voiceChannelId, String defaultPlaylist, boolean trackRepeat, boolean playlistRepeat) {
         this.serverId = serverId;
         this.djRoleId = djRoleId;
         this.textChannelId = textChannelId;

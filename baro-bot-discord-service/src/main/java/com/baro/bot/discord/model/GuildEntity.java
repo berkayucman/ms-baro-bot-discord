@@ -5,9 +5,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity(name = "guild_settings")
-@Table(name = "guild_settings")
-public class GuildSettingsEntity {
+@Entity(name = "guild")
+@Table(name = "guild")
+public class GuildEntity {
 
     @Id
     @Column(unique = true, nullable = false)
@@ -27,10 +27,10 @@ public class GuildSettingsEntity {
     @Column(nullable = false)
     private String serverAvatar;
 
-    public GuildSettingsEntity() {
+    public GuildEntity() {
     }
 
-    public GuildSettingsEntity(Long serverId, String prefix, String serverName, boolean welcomeMessage, String welcomeAvatar, String ticketMessage, String welcomeDm, String serverAvatar) {
+    public GuildEntity(Long serverId, String prefix, String serverName, boolean welcomeMessage, String welcomeAvatar, String ticketMessage, String welcomeDm, String serverAvatar) {
         this.serverId = serverId;
         this.prefix = prefix;
         this.serverName = serverName;
